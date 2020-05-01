@@ -127,3 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# IDE dirctories
+.idea/
+.vscode/
+
+# collected static files directory
+static/
+
+# secret key
+secret_key.txt
