@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% load filters %}
+
+{% block headline %}
+{{ headline }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-4"> </div>
+    <div class="col-lg-4">
+      <table class="table table-hover table-sm">
+        {% for o in object_list %}
+          {% if forloop.first %}
+          {{ o|as_table_header|safe }}
+          {% endif  %}
+          {{ o|as_table_row|safe }}
+        {% endfor %}
+      </table>
+    </div>
+    <div class="col-lg-4"> </div>
+  </div>
+</div>
+{% endblock %}

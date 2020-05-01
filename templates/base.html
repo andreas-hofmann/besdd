@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  {# Load the tag library #}
+  {% load bootstrap4 %}
+  
+  {# Load CSS and JavaScript #}
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery='full' %}
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  {# moment.js + Iodash #}
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
+
+  {# DateTimePicker(-plus) #}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.css" type="text/css" media="all" rel="stylesheet">
+  <link href="/static/bootstrap_datepicker_plus/css/datepicker-widget.css" type="text/css" media="all" rel="stylesheet">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+  <script type="text/javascript" src="/static/bootstrap_datepicker_plus/js/datepicker-widget.js"></script>
+
+  {# Vue.js + plotly #}
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
+
+  {# Own javascript code #}
+  {% load static %}
+  <script src="{% static 'js/app.js' %}"></script>
+
+  <script type="text/javascript">
+
+  {% if child %}
+  function check_sleep_state() {
+    $('#sleep-status').html("Checking...");
+    $.get("{% url 'check_data' child.id %}", "",
+      function (data) {
+        var el = $('#sleep-status');
+        var state = "{{ child.name }} is ";
+        var since = "";
+
+        if (data['sleep']['state'] >= 0) {
+          if (data['sleep']['state'] == 0) {
+            state += "asleep";
+          } else {
+            state += "awake";
+          }
+
+          since = since_str(data['sleep']);
+
+          if (since.length > 0) {
+            state += " since" + since;
+          }
+
+          state += ". ";
+        }
+
+        if (data['eat']['state'] > 0) {
+          since = since_str(data['eat']);
+          if (since.length > 0) {
+            since += " ago. ";
+          } else {
+            since = "now. ";
+          }
+          state += "Last meal was " + since;
+        }
+        if (data['diaper']['state'] > 0) {
+          since = since_str(data['diaper']);
+          if (since.length > 0) {
+            since += " ago.";
+          } else {
+            since = " now. ";
+          }
+          state += "Diaper changed " + since;
+        }
+
+        el.html(state);
+      }
+    );
+  }
+  {% endif %}
+
+  $('document').ready( check_sleep_state );
+
+  </script>
+
+  <style>
+    .material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 18px;  /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+  
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+  
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+  
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+    }
+  
+    /* Navbar button width */
+    .nav-btn {
+      width: 8em;
+    }
+  </style>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="Andreas Hofmann">
+
+  {% block head %}
+  {% endblock %}
+
+  <title>besdd - A baby's eat-sleep-diaper diary</title>
+
+</head>
+
+<body>
+  
+  {# Display django.contrib.messages as Bootstrap alerts #}
+  {% bootstrap_messages %}
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-md navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'index' %}">besdd</a>
+          {% if view.request.user.is_authenticated %}
+          {% if child %}
+              <a class="nav-link" href="{% url 'meals_add' child.id %}">+ eat</a>
+              <a class="nav-link" href="{% url 'sleepphases_add' child.id %}">+ sleep</a>
+              <a class="nav-link" href="{% url 'diapers_add' child.id %}">+ diaper</a>
+          {% endif %}
+          {% endif %}
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+
+          {% if view.request.user.is_authenticated %}
+          {% if child %}
+            <li class="nav-item">
+              <div class="nav-link dropdown show">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    View
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="{% url 'plot_summary' child.id %}">charts</a>
+                  <a class="dropdown-item" href="{% url 'summary' child.id %}">summary</a>
+                </div>
+              </div>
+            </li>
+            <li class="nav-item">
+              <div class="nav-link dropdown show">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Edit
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="{% url 'meals' child.id %}">meals</a>
+                  <a class="dropdown-item" href="{% url 'sleepphases' child.id %}">sleep</a>
+                  <a class="dropdown-item" href="{% url 'diapers' child.id %}">diapers</a>
+                  <a class="dropdown-item" href="{% url 'events' child.id %}">events</a>
+                  <a class="dropdown-item" href="{% url 'diary' child.id %}">diary</a>
+                  <a class="dropdown-item" href="{% url 'measurements' child.id %}">measurements</a>
+                </div>
+              </div>
+            </li>
+          {% endif %}
+
+          {% if children %}
+          <li class="nav-item">
+            <div class="nav-link dropdown show">
+              <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {% if child %}
+                    {{ child.name }}
+                  {% else %}
+                    Select child
+                  {% endif %}
+              </a>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                {% if child %}
+                <a class="dropdown-item" href="{% url 'meals_add' child.id %}">+ eat</a>
+                <a class="dropdown-item" href="{% url 'sleepphases_add' child.id %}">+ sleep</a>
+                <a class="dropdown-item" href="{% url 'diapers_add' child.id %}">+ diaper</a>
+                  <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'events_add' child.id %}">+ event</a>
+                <a class="dropdown-item" href="{% url 'diary_add' child.id %}">+ diary</a>
+                <a class="dropdown-item" href="{% url 'measurements_add' child.id %}">+ measurement</a>
+                  <div class="dropdown-divider"></div>
+                  <div class="pl-2 small">All children</div>
+                {% endif %}
+                {% for child in children %}
+                <a class="dropdown-item" href="{% url 'child' child.id %}">{{ child.name }}</a>
+                {% endfor %}
+              </div>
+            </div>
+          </li>
+          {% endif %}
+
+          <li class="nav-item">
+            <div class="nav-link dropdown show">
+              <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Hi {{ view.request.user.username }}!
+              </a>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="{% url 'child_add' %}">+ child</a>
+                <a class="dropdown-item" href="{% url 'foods_add' %}">+ food</a>
+                <a class="dropdown-item" href="{% url 'diapercontents_add' %}">+ diaper contents</a>
+                    <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'password_change' %}">Change password</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+              </div>
+            </div>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">Register</a>
+          </li>
+          {% endif %}
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!--Sleep checker -->
+  {% if child %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12" style="font-size: 11px;">
+        <a class="text-muted" id="sleep-status" onclick="check_sleep_state();" href="#"> </a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Page Content -->
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+
+        <h2 class="mt-2">
+        {% block headline %}
+        {% endblock %}
+        </h2>
+
+        {% block content %}
+        {% endblock %}
+
+      </div>
+    </div>
+  </div>
+
+  {% if is_paginated %}
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4"></div>
+      <div class="col-lg-4">
+
+<!--
+        <div class="pagination justify-content-center">
+          <span class="step-links">
+              {% if page_obj.has_previous %}
+                  <a href="?page=1">&laquo; first</a>
+                  <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+              {% endif %}
+
+              <span class="current">
+                  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+              </span>
+
+              {% if page_obj.has_next %}
+                  <a href="?page={{ page_obj.next_page_number }}">next</a>
+                  <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+              {% endif %}
+          </span>
+        </div>
+-->
+
+        <nav aria-label="Page navigation example">
+          <ul class="pagination pagination-sm justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+              </a>
+            </li>
+            {% endif %}
+            <li class="page-item"><a class="page-link" href="#">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a></li>
+            {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+
+      </div>
+      <div class="col-lg-4"></div>
+    </div>
+  </div>
+  {% endif %}
+
+{% block script %}
+{% endblock %}
+
+</body>
+
+</html>

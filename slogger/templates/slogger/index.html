@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block headline %}
+Welcome!
+{% endblock %}
+
+{% block content %}
+
+{% if view.request.user.is_authenticated %}
+Please select a child.
+{% else %}
+Please log in.
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% load filters %}
+
+{% block headline %}
+Summary for {{ child.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container"> <p>
+Average: {{ avg_sleep|secs_to_h }} in {{ avg_phases }} phases.
+</p> </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-lg">
+
+      <table class="table table-bordered table-hover table-sm">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col-xs">Date</th>
+            <th scope="col-xs">Total</th>
+            <th scope="col-xs">Day</th>
+            <th scope="col-xs">Night</th>
+          </tr>
+        </thead>
+      
+        <tbody>
+        {% for date, data in totals %}
+          <tr>
+            <th class="col-xs-3" scope="row"> {{ date }}</th>
+            {% for col, d in data.items %}
+              <td>
+              {% for type, d2 in d.items %}
+                {% if d2 > 0 %}
+                  {% if forloop.counter == 1 %}
+                    {{ d2|secs_to_h }}<br>
+                  {% else  %}
+                    in {{ d2 }} phases<br>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              </td>
+            {% endfor %}
+          <tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-2"></div>
+  </div>
+</div>
+
+{% endblock %}

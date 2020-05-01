@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block headline %}
+{{ headline }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-4"> </div>
+    <div class="col-lg-4">
+      {% load crispy_forms_tags %}
+      {% crispy form %}
+    </div>
+    <div class="col-lg-4"> </div>
+  </div>
+</div>
+{% endblock %}

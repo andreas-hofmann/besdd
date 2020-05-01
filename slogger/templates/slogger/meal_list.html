@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% load filters %}
+
+{% block headline %}
+Meals for {{ child.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-lg">
+      <table class="table table-bordered table-hover table-sm">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col-xs-3">Date</th>
+            <th scope="col-xs-2">Time</th>
+            <th scope="col-xs-2">Food</th>
+            <th scope="col-xs">Actions</th>
+          </tr>
+        </thead>
+      
+        <tbody>
+          {% for o in object_list %}
+          <tr>
+            <th class="col-xs-3" scope="row"> {{ o.dt|dt_localdate }}</th>
+            <td class="col-xs-2">{{ o.dt|dt_localtime }}</td>
+            <td class="col-xs-2"> {% for f in o.food.all %} {{ f }} {% endfor %} </td>
+            <td class="col-xs">
+              <a class='btn btn-secondary btn-sm' href='{% url 'meals_edit' child.id o.id %}'>
+                <i class="material-icons">edit</i>
+              </a>
+              <a class='btn btn-danger btn-sm' href='{% url 'meals_delete' child.id o.id %}'>
+                <i class="material-icons">delete</i>
+              </a>
+           </td>
+          <tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-2"></div>
+  </div>
+</div>
+
+{% endblock %}

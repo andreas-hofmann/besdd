@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block headline %}
+All children:
+{% endblock %}
+
+{% block content %}
+
+{% for o in object_list %}
+
+{{ o.name }}<br>
+
+{% endfor %}
+
+{% endblock %}
