@@ -15,7 +15,7 @@ def calculate_average(totals, key):
 
     return total_sleep/total_days
 
-def calculate_totals(data, h_day=8, h_night=19):
+def calculate_totals(data, dict_key):
     totals = {}
 
     for d in data:
@@ -23,9 +23,9 @@ def calculate_totals(data, h_day=8, h_night=19):
         main_key = str(my_dt.date())
 
         if not totals.get(main_key):
-            totals[main_key] = 0
+            totals[main_key] = { dict_key: 0 }
 
-        totals[main_key] += 1
+        totals[main_key][dict_key] += 1
 
     return sorted(totals.items(), key=lambda kv: date.fromisoformat(kv[0]))
 
