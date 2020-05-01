@@ -19,7 +19,7 @@ def get_histogram_data(request, child_id=None, raster=10):
     mealdata = helpers.filter_GET_daterage(request, mealdata)
     mealdata = functions.get_hist_data(mealdata, raster, raster)
 
-    diaperdata = models.Meal.objects.filter(child=child_id)
+    diaperdata = models.Diaper.objects.filter(child=child_id)
     diaperdata = helpers.filter_GET_daterage(request, diaperdata)
     diaperdata = functions.get_hist_data(diaperdata, raster, raster)
 
@@ -50,7 +50,19 @@ def get_summary_data(request, child_id=None):
 
     data = models.SleepPhase.objects.filter(child=child_id)
     data = helpers.filter_GET_daterage(request, data)
-    totals = functions.calculate_sleep_totals(data)
+    sleeptotals = functions.calculate_sleep_totals(data)
+
+    diaperdata = models.Diaper.objects.filter(child=child_id)
+    diaperdata = helpers.filter_GET_daterage(request, diaperdata)
+    diapertotals = functions.calculate_totals(diaperdata, "diapers")
+
+    mealdata = models.Meal.objects.filter(child=child_id)
+    mealdata = helpers.filter_GET_daterage(request, mealdata)
+    mealtotals = functions.calculate_totals(mealdata, "meals")
+
+    totals = sleeptotals
+    totals = functions.merge_totals(totals, diapertotals)
+    totals = functions.merge_totals(totals, mealtotals)
 
     response = {
         'day':       [],
@@ -60,16 +72,45 @@ def get_summary_data(request, child_id=None):
         'sum_cnt':   [],
         'day_cnt':   [],
         'night_cnt': [],
+        'diapers':   [],
+        'meals':     [],
     }
 
     for d in totals:
-        response['day']      .append(d[0])
-        response['sum_h']    .append(sec_to_h(d[1]['sum']['time']))
-        response['day_h']    .append(sec_to_h(d[1]['day']['time']))
-        response['night_h']  .append(sec_to_h(d[1]['night']['time']))
-        response['sum_cnt']  .append(         d[1]['sum']['count'])
-        response['day_cnt']  .append(         d[1]['day']['count'])
-        response['night_cnt'].append(         d[1]['night']['count'])
+        response['day'].append(d[0])
+
+        try:
+            response['sum_h'].append(sec_to_h(d[1]['sum']['time']))
+        except:
+            response['sum_h'].append(0)
+        try:
+            response['day_h'].append(sec_to_h(d[1]['day']['time']))
+        except:
+            response['day_h'].append(0)
+        try:
+            response['night_h'].append(sec_to_h(d[1]['night']['time']))
+        except:
+            response['night_h'].append(0)
+        try:
+            response['sum_cnt'].append(d[1]['sum']['count'])
+        except:
+            response['sum_cnt'].append(0)
+        try:
+            response['day_cnt'].append(d[1]['day']['count'])
+        except:
+            response['day_cnt'].append(0)
+        try:
+            response['night_cnt'].append(d[1]['night']['count'])
+        except:
+            response['night_cnt'].append(0)
+        try:
+            response['diapers'].append(d[1]['diapers'])
+        except:
+            response['diapers'].append(0)
+        try:
+            response['meals'].append(d[1]['meals'])
+        except:
+            response['meals'].append(0)
 
     return JsonResponse(response)
 
