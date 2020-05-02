@@ -183,6 +183,7 @@ class DiaryEntry(models.Model,
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
     created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     dt = models.DateTimeField("Date", default=tz.now)
+    title = models.CharField("Title", max_length=100)
     content = models.TextField("Entry")
 
     def __str__(self):
