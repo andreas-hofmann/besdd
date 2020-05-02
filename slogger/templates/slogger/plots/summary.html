@@ -4,6 +4,15 @@
 
 <script type='text/javascript'>
 
+Vue.component('summary-entry', {
+  delimiters: ['[[', ']]'],
+  props: {
+    summary: { type: Object, },
+    day: { type: String, },
+  },
+  template: "#summary-entry-template",
+});
+
 var vm = new Vue({
       delimiters: ['[[', ']]'],
       el: '#app',
@@ -11,7 +20,8 @@ var vm = new Vue({
         window: 7,
         from: moment().subtract(14, "days").format("YYYY-MM-DD"),
         to:   moment().format("YYYY-MM-DD"),
-        graph_type: "Time",
+        graph_type: "List",
+        my_data: {},
       },
       watch: {
         from:       function (newDate, oldDate) { this.debounce_update(); },
@@ -25,9 +35,13 @@ var vm = new Vue({
       methods: {
         update_graph: function () {
             if (this.graph_type === "Time") {
-              load_time_graph("graph", "{% url 'summary_data' child.id %}", {"from": this.from, "to": this.to});
+              load_time_graph("my-graph", "{% url 'summary_data_graph' child.id %}", {"from": this.from, "to": this.to});
             } else if (this.graph_type === "Histogram") {
-              load_histogram("graph", "{% url 'histogram_data' child.id %}", {"from": this.from, "to": this.to});
+              load_histogram("my-graph", "{% url 'histogram_data' child.id %}", {"from": this.from, "to": this.to});
+            } else if (this.graph_type === "List") {
+              $.get("{% url 'summary_data_list' child.id %}", {"from": this.from, "to": this.to}, function (data) {
+                vm.my_data = data;
+              });
             }
         },
         move_window: function (direction) {
@@ -47,18 +61,70 @@ Summary for {{ child.name }}
 
 {% block content %}
 
+<script type="text/x-template" id="summary-entry-template">
+<div class="summary-entry">
+  <div id="accordion">
+    <div class="card">
+      <div class="card-header" :id="'heading'+day">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" data-toggle="collapse" :data-target="'#id'+day" aria-expanded="false" :aria-controls="'collapse'+day">
+            [[ day ]]
+          </button>
+        </h5>
+      </div>
+
+      <div :id="'id'+day" class="collapse" :aria-labelledby="'heading'+day" data-parent="#accordion">
+        <div class="card-body">
+          <div class="container">
+          <div class="row">
+
+          <div class="col-md">
+          <h4>Sleep total:</h4>
+          <p>
+            [[ summary.sum.time/3600 ]] hours in [[ summary.sum.count ]] phases.
+          </p>
+          </div>
+          <div class="col-md">
+          <h4>Sleep day:</h4>
+          <p>
+            [[ summary.day.time/3600 ]] hours in [[ summary.day.count ]] phases.
+          </p>
+          </div>
+          <div class="col-md">
+          <h4>Sleep night:</h4>
+          <p>
+            [[ summary.night.time/3600 ]] hours in [[ summary.night.count ]] phases.
+          </p>
+          </div>
+
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</script>
+
 <div id="app" class="container">
+
     <div class="dropdown mt-3">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         [[ graph_type ]]
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" @click="graph_type = 'Time'" href="#">Time</a>
+        <a class="dropdown-item" @click="graph_type = 'List'" href="#">List</a>
+        <a class="dropdown-item" @click="graph_type = 'Time'" href="#">Timeline</a>
         <a class="dropdown-item" @click="graph_type = 'Histogram'" href="#">Histogram</a>
       </div>
     </div>
 
-   <div id="graph"></div>
+    <div class="my-3">
+      <div v-if="graph_type == 'List'" id="my-list">
+       <summary-entry v-for="data in my_data" :key="data.day" :day="data.day" :summary="data.data"></summary-entry>
+      </div>
+      <div v-else id="my-graph"></div>
+    </div>
 
     <div class="row mb-2">
       <div class="col-sm"></div>
