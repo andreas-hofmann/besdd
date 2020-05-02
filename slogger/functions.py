@@ -46,13 +46,12 @@ def calculate_totals(data, dict_key):
 def calculate_sleep_totals(data, h_day=8, h_night=19):
     totals = {}
 
-    for d in data:
-        carried_secs = {
-            'sum' : 0,
-            'day' : 0,
-            'night' : 0,
-        }
+    carried_secs = {
+        'sum' : 0,
+        'daynight' : 0,
+    }
 
+    for d in data:
         my_dt = tz.localtime(d.dt)
         main_key = str(my_dt.date())
         if not totals.get(main_key):
@@ -66,17 +65,17 @@ def calculate_sleep_totals(data, h_day=8, h_night=19):
         totals[main_key]['sum']['time'] += d.duration_sec_day()
         totals[main_key]['sum']['count'] += 1
 
-        carried_secs['sum'] += d.duration_sec_day(tomorrow=True)
+        carried_secs['sum'] = d.duration_sec_day(tomorrow=True)
 
         key = 'night'
         if  my_dt.time() >= time(hour=h_day) and my_dt.time() <= time(hour=h_night):
             key = 'day'
 
-        totals[main_key][key]['time'] += carried_secs[key]
+        totals[main_key][key]['time'] += carried_secs['daynight']
         totals[main_key][key]['time'] += d.duration_sec_day()
         totals[main_key][key]['count'] += 1
 
-        carried_secs[key] += d.duration_sec_day(tomorrow=True)
+        carried_secs['daynight'] = d.duration_sec_day(tomorrow=True)
 
     return sorted(totals.items(), key=lambda kv: date.fromisoformat(kv[0]))
 
