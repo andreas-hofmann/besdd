@@ -5,6 +5,7 @@ from django.views.generic import (
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
@@ -35,6 +36,16 @@ class IndexView(mixins.AddChildContextViewMixin,
         return super().render_to_response(context, **response_kwargs)
 
 # Views requiring login
+
+# Quick access for adding sleepphase
+@login_required
+def quick_add_sleepphase(request, child_id=None):
+    sp = models.SleepPhase.objects.filter(child=child_id).last()
+
+    if sp.dt and sp.dt_end:
+        return redirect('sleepphases_add', child_id=child_id)
+
+    return redirect('sleepphases_edit', child_id=child_id, pk=sp.id)
 
 # Template views
 

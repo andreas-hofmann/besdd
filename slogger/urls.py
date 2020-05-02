@@ -15,6 +15,8 @@ urlpatterns = [
     path('diapercontents/add/',                     views.DiaperContentCreateView.as_view(),name="diapercontents_add"),
     path('diapercontents/edit/<int:pk>/',           views.DiaperContentUpdateView.as_view(),name="diapercontents_edit"),
 
+    path('<int:child_id>/sleep/quickadd/',          views.quick_add_sleepphase,             name="sleepphases_quickadd"),
+
     path('<int:child_id>/sleep/',                   views.SleepPhaseListView.as_view(),     name="sleepphases"),
     path('<int:child_id>/sleep/add/',               views.SleepPhaseCreateView.as_view(),   name="sleepphases_add"),
 

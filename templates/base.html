@@ -142,7 +142,7 @@
           {% if view.request.user.is_authenticated %}
           {% if child %}
               <a class="nav-link" href="{% url 'meals_add' child.id %}">+ eat</a>
-              <a class="nav-link" href="{% url 'sleepphases_add' child.id %}">+ sleep</a>
+              <a class="nav-link" href="{% url 'sleepphases_quickadd' child.id %}">+ sleep</a>
               <a class="nav-link" href="{% url 'diapers_add' child.id %}">+ diaper</a>
           {% endif %}
           {% endif %}
