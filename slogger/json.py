@@ -50,9 +50,27 @@ def get_histogram_data(request, child_id=None, raster=10):
 
     return JsonResponse(response)
 
+
 @login_required
 @decorators.only_own_children
-def get_summary_data(request, child_id=None):
+def get_summary_data_list(request, child_id=None):
+
+    sleep, meal, diaper = _fetch_summary_from_db(request, child_id)
+
+    sleeptotals = functions.calculate_sleep_totals(sleep)
+    mealtotals = functions.calculate_totals(meal, "meals")
+    diapertotals = functions.calculate_totals(diaper, "diapers")
+
+    totals = sleeptotals
+    totals = functions.merge_totals(totals, mealtotals)
+    totals = functions.merge_totals(totals, diapertotals)
+
+    return JsonResponse([{'day': t[0], 'data': t[1]} for t in totals][::-1], safe=False)
+
+
+@login_required
+@decorators.only_own_children
+def get_summary_data_graph(request, child_id=None):
 
     def sec_to_h(sec):
         return sec/3600.0
@@ -116,7 +134,6 @@ def get_summary_data(request, child_id=None):
             response['meals'].append(0)
 
     return JsonResponse(response)
-    #return JsonResponse(dict((x, y) for x,y in totals))
 
 @login_required
 @decorators.only_own_children

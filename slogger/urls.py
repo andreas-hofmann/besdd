@@ -49,7 +49,8 @@ urlpatterns = [
 
 
     path('<int:child_id>/data/check/',                 json.get_check,                      name="check_data"),
-    path('<int:child_id>/data/summary/',               json.get_summary_data,               name="summary_data"),
+    path('<int:child_id>/data/summary/graph/',         json.get_summary_data_graph,         name="summary_data_graph"),
+    path('<int:child_id>/data/summary/list/',          json.get_summary_data_list,          name="summary_data_list"),
     path('<int:child_id>/data/histogram/',             json.get_histogram_data,             name="histogram_data"),
     path('<int:child_id>/data/histogram/<int:raster>', json.get_histogram_data,             name="histogram_data"),
 
