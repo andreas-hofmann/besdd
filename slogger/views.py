@@ -11,6 +11,7 @@ from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
+from django.utils import timezone as tz
 
 from . import models
 from . import forms
@@ -64,6 +65,12 @@ class SleepPhaseCreateView(LoginRequiredMixin,
     success_message = "Sleepphase added."
     form_class = forms.SleepPhaseForm
 
+    def get_initial(self):
+        initial = super().get_initial()
+        if not initial.get('dt'):
+            initial['dt'] = tz.now()
+        return initial
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["headline"] = "Create Sleepphase"
@@ -80,6 +87,12 @@ class SleepPhaseUpdateView(LoginRequiredMixin,
     template_name = "generic_form.html"
     success_message = "Sleepphase updated."
     form_class = forms.SleepPhaseForm
+
+    def get_initial(self):
+        initial = super().get_initial()
+        if not initial.get('dt_end'):
+            initial['dt_end'] = tz.now()
+        return initial
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
