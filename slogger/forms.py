@@ -2,6 +2,7 @@ from django import forms
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout
+from django.utils import timezone as tz
 
 from bootstrap_datepicker_plus import DateTimePickerInput
 
@@ -45,6 +46,19 @@ class SleepPhaseForm(GenericHelperForm):
                                                                      'ignoreReadonly': True,
                                                                      'showTodayButton': True})
         self.fields['dt_end'].widget.attrs['readonly'] = True
+
+    def clean(self):
+        dt = self.data.get('dt')
+        dt_end = self.data.get('dt_end')
+
+        if dt and dt_end:
+            if dt > dt_end:
+                raise forms.ValidationError("Start time must not be after end time.", code='invalid')
+
+            if (tz.datetime.fromisoformat(dt_end) - tz.datetime.fromisoformat(dt)) > tz.timedelta(days=1):
+                raise forms.ValidationError("Sleep phases > 1 day are not supported.", code='invalid')
+
+        return super().clean()
 
 class ChildForm(GenericHelperForm):
     class Meta:
