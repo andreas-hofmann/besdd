@@ -44,7 +44,7 @@ class IndexView(mixins.AddChildContextViewMixin,
 def quick_add_sleepphase(request, child_id=None):
     sp = models.SleepPhase.objects.filter(child=child_id).last()
 
-    if sp.dt and sp.dt_end:
+    if not sp or (sp.dt and sp.dt_end):
         return redirect('sleepphases_add', child_id=child_id)
 
     return redirect('sleepphases_edit', child_id=child_id, pk=sp.id)
