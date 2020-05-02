@@ -27,7 +27,10 @@ def calculate_average(totals, key):
         total_days += 1
         total_sleep += d[1]['sum'][key]
 
-    return total_sleep/total_days
+    try:
+        return total_sleep/total_days
+    except ZeroDivisionError:
+        return 0
 
 def calculate_totals(data, dict_key):
     totals = {}
