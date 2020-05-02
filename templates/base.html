@@ -157,18 +157,18 @@
             <li class="nav-item">
               <div class="nav-link dropdown show">
                 <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    View
+                    Summary
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                   <a class="dropdown-item" href="{% url 'plot_summary' child.id %}">charts</a>
-                  <a class="dropdown-item" href="{% url 'summary' child.id %}">summary</a>
+                  <a class="dropdown-item" href="{% url 'summary' child.id %}">list</a>
                 </div>
               </div>
             </li>
             <li class="nav-item">
               <div class="nav-link dropdown show">
                 <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Edit
+                    View
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                   <a class="dropdown-item" href="{% url 'meals' child.id %}">meals</a>
