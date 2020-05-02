@@ -27,9 +27,9 @@ def _fetch_summary_from_db(request, child_id):
 def get_histogram_data(request, child_id=None, raster=10):
     sleep, meal, diaper = _fetch_summary_from_db(request, child_id)
 
-    sleepdata = functions.get_hist_data(sleepdata, raster, raster)
-    mealdata = functions.get_hist_data(mealdata, raster, raster)
-    diaperdata = functions.get_hist_data(diaperdata, raster, raster)
+    sleepdata = functions.get_hist_data(sleep, raster, raster)
+    mealdata = functions.get_hist_data(meal, raster, raster)
+    diaperdata = functions.get_hist_data(diaper, raster, raster)
 
     response = {
         'time':  [],
@@ -54,7 +54,6 @@ def get_histogram_data(request, child_id=None, raster=10):
 @login_required
 @decorators.only_own_children
 def get_summary_data_list(request, child_id=None):
-
     sleep, meal, diaper = _fetch_summary_from_db(request, child_id)
 
     sleeptotals = functions.calculate_sleep_totals(sleep)
