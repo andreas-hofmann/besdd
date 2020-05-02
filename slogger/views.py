@@ -19,6 +19,7 @@ from . import forms
 from . import functions
 from . import mixins
 from . import helpers
+from . import decorators
 
 # Free for all views
 
@@ -37,8 +38,9 @@ class IndexView(mixins.AddChildContextViewMixin,
 
 # Views requiring login
 
-# Quick access for adding sleepphase
+# Shortcut for adding sleepphase
 @login_required
+@decorators.only_own_children
 def quick_add_sleepphase(request, child_id=None):
     sp = models.SleepPhase.objects.filter(child=child_id).last()
 

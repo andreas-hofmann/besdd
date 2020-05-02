@@ -8,8 +8,10 @@ from . import models
 from . import functions
 from . import mixins
 from . import helpers
+from . import decorators
 
 @login_required
+@decorators.only_own_children
 def get_histogram_data(request, child_id=None, raster=10):
     sleepdata = models.SleepPhase.objects.filter(child=child_id)
     sleepdata = helpers.filter_GET_daterage(request, sleepdata)
@@ -43,6 +45,7 @@ def get_histogram_data(request, child_id=None, raster=10):
     return JsonResponse(response)
 
 @login_required
+@decorators.only_own_children
 def get_summary_data(request, child_id=None):
 
     def sec_to_h(sec):
@@ -115,6 +118,7 @@ def get_summary_data(request, child_id=None):
     return JsonResponse(response)
 
 @login_required
+@decorators.only_own_children
 def get_check(request, child_id=None):
     children = models.Child.objects.filter(parents__id=request.user.id)
     child = get_object_or_404(models.Child, id=child_id)
