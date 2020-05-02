@@ -10,19 +10,25 @@ from . import mixins
 from . import helpers
 from . import decorators
 
+def _fetch_summary_from_db(request, child_id):
+    sleep = models.SleepPhase.objects.filter(child=child_id)
+    sleep = helpers.filter_GET_daterage(request, sleep)
+
+    meal = models.Meal.objects.filter(child=child_id)
+    meal = helpers.filter_GET_daterage(request, meal)
+
+    diaper = models.Diaper.objects.filter(child=child_id)
+    diaper = helpers.filter_GET_daterage(request, diaper)
+
+    return sleep, meal, diaper
+
 @login_required
 @decorators.only_own_children
 def get_histogram_data(request, child_id=None, raster=10):
-    sleepdata = models.SleepPhase.objects.filter(child=child_id)
-    sleepdata = helpers.filter_GET_daterage(request, sleepdata)
+    sleep, meal, diaper = _fetch_summary_from_db(request, child_id)
+
     sleepdata = functions.get_hist_data(sleepdata, raster, raster)
-
-    mealdata = models.Meal.objects.filter(child=child_id)
-    mealdata = helpers.filter_GET_daterage(request, mealdata)
     mealdata = functions.get_hist_data(mealdata, raster, raster)
-
-    diaperdata = models.Diaper.objects.filter(child=child_id)
-    diaperdata = helpers.filter_GET_daterage(request, diaperdata)
     diaperdata = functions.get_hist_data(diaperdata, raster, raster)
 
     response = {
@@ -51,21 +57,15 @@ def get_summary_data(request, child_id=None):
     def sec_to_h(sec):
         return sec/3600.0
 
-    data = models.SleepPhase.objects.filter(child=child_id)
-    data = helpers.filter_GET_daterage(request, data)
-    sleeptotals = functions.calculate_sleep_totals(data)
+    sleep, meal, diaper = _fetch_summary_from_db(request, child_id)
 
-    diaperdata = models.Diaper.objects.filter(child=child_id)
-    diaperdata = helpers.filter_GET_daterage(request, diaperdata)
-    diapertotals = functions.calculate_totals(diaperdata, "diapers")
-
-    mealdata = models.Meal.objects.filter(child=child_id)
-    mealdata = helpers.filter_GET_daterage(request, mealdata)
-    mealtotals = functions.calculate_totals(mealdata, "meals")
+    sleeptotals = functions.calculate_sleep_totals(sleep)
+    mealtotals = functions.calculate_totals(meal, "meals")
+    diapertotals = functions.calculate_totals(diaper, "diapers")
 
     totals = sleeptotals
-    totals = functions.merge_totals(totals, diapertotals)
     totals = functions.merge_totals(totals, mealtotals)
+    totals = functions.merge_totals(totals, diapertotals)
 
     response = {
         'day':       [],
@@ -116,6 +116,7 @@ def get_summary_data(request, child_id=None):
             response['meals'].append(0)
 
     return JsonResponse(response)
+    #return JsonResponse(dict((x, y) for x,y in totals))
 
 @login_required
 @decorators.only_own_children
