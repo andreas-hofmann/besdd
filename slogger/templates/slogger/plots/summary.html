@@ -9,6 +9,7 @@ Vue.component('summary-entry', {
   props: {
     summary: { type: Object, },
     day: { type: String, },
+    idx: { type: Number, },
   },
   template: "#summary-entry-template",
 });
@@ -18,7 +19,7 @@ var vm = new Vue({
       el: '#app',
       data: {
         window: 7,
-        from: moment().subtract(14, "days").format("YYYY-MM-DD"),
+        from: moment().subtract(7, "days").format("YYYY-MM-DD"),
         to:   moment().format("YYYY-MM-DD"),
         graph_type: "List",
         my_data: {},
@@ -63,35 +64,34 @@ Summary for {{ child.name }}
 
 <script type="text/x-template" id="summary-entry-template">
 <div class="summary-entry">
-  <div id="accordion">
     <div class="card">
-      <div class="card-header" :id="'heading'+day">
+      <div class="card-header" :id="'heading'+idx">
         <h5 class="mb-0">
-          <button class="btn btn-link collapsed" data-toggle="collapse" :data-target="'#id'+day" aria-expanded="false" :aria-controls="'id'+day">
+          <button class="btn btn-link" :class="[ idx !== 0 ? 'collapsed' : '']" data-toggle="collapse" :data-target="'#collapse'+idx" :aria-expanded="[ idx === 0 ? 'true' : '' ]" :aria-controls="'collapse'+idx">
             [[ day ]]
           </button>
         </h5>
       </div>
 
-      <div :id="'id'+day" class="collapse" :aria-labelledby="'heading'+day" data-parent="#accordion">
+      <div :id="'collapse'+idx" class="collapse" :class="[ idx === 0 ? 'show' : '']" :aria-labelledby="'heading'+idx" data-parent="#accordion">
         <div class="card-body">
           <div class="container">
           <div class="row">
 
           <div class="col-md">
-          <h4>Sleep total:</h4>
+          <h5>Sleep total:</h5>
           <p>
             [[ summary.sum.time/3600 ]] hours in [[ summary.sum.count ]] phases.
           </p>
           </div>
           <div class="col-md">
-          <h4>Sleep day:</h4>
+          <h5>Sleep day:</h5>
           <p>
             [[ summary.day.time/3600 ]] hours in [[ summary.day.count ]] phases.
           </p>
           </div>
           <div class="col-md">
-          <h4>Sleep night:</h4>
+          <h5>Sleep night:</h5>
           <p>
             [[ summary.night.time/3600 ]] hours in [[ summary.night.count ]] phases.
           </p>
@@ -102,7 +102,6 @@ Summary for {{ child.name }}
         </div>
       </div>
     </div>
-  </div>
 </div>
 </script>
 
@@ -121,7 +120,9 @@ Summary for {{ child.name }}
 
     <div class="my-3">
       <div v-if="graph_type == 'List'" id="my-list">
-       <summary-entry v-for="data in my_data" :key="data.day" :day="data.day" :summary="data.data"></summary-entry>
+        <div id="accordion">
+          <summary-entry v-for="(data, idx) in my_data" :key="data.day" :idx="idx" :day="data.day" :summary="data.data"></summary-entry>
+        </div>
       </div>
       <div v-else id="my-graph"></div>
     </div>
