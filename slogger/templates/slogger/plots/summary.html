@@ -11,6 +11,12 @@ Vue.component('summary-entry', {
     day: { type: String, },
     idx: { type: Number, },
   },
+  methods: {
+    secToHours: function(val) {
+      val = parseFloat(val);
+      return (val/3600).toFixed(1);
+    },
+  },
   template: "#summary-entry-template",
 });
 
@@ -81,19 +87,19 @@ Summary for {{ child.name }}
           <div class="col-md">
           <h5>Sleep total:</h5>
           <p>
-            [[ summary.sum.time/3600 ]] hours in [[ summary.sum.count ]] phases.
+            [[ secToHours(summary.sum.time) ]] hours in [[ summary.sum.count ]] phases.
           </p>
           </div>
           <div class="col-md">
           <h5>Sleep day:</h5>
           <p>
-            [[ summary.day.time/3600 ]] hours in [[ summary.day.count ]] phases.
+            [[ secToHours(summary.day.time) ]] hours in [[ summary.day.count ]] phases.
           </p>
           </div>
           <div class="col-md">
           <h5>Sleep night:</h5>
           <p>
-            [[ summary.night.time/3600 ]] hours in [[ summary.night.count ]] phases.
+            [[ secToHours(summary.night.time) ]] hours in [[ summary.night.count ]] phases.
           </p>
           </div>
 
