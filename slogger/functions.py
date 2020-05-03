@@ -2,19 +2,21 @@ from datetime import datetime, timedelta, time
 from django.utils import timezone as tz
 from datetime import time, date
 
-def merge_totals(t1, t2):
-    t1.extend(t2)
-    t1.sort(key=lambda k: k[0])
+def merge_totals(totals, *args):
+    for arg in args:
+        totals.extend(arg)
+    totals.sort(key=lambda k: k[0])
 
     i = 0
-    while i < len(t1):
-        if i < len(t1)-1 and t1[i][0] == t1[i+1][0]:
-            t1[i] = list(t1[i])
-            t1[i][1] = { **t1[i][1], **t1[i+1][1] }
-            t1.pop(i+1)
-        i += 1
+    while i < len(totals):
+        if i < len(totals)-1 and totals[i][0] == totals[i+1][0]:
+            totals[i] = list(totals[i])
+            totals[i][1] = { **totals[i][1], **totals[i+1][1] }
+            totals.pop(i+1)
+        else:
+            i += 1
 
-    return t1
+    return totals
 
 def calculate_average(totals, key):
     total_sleep = 0
