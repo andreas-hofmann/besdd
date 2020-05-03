@@ -155,15 +155,7 @@
           {% if view.request.user.is_authenticated %}
           {% if child %}
             <li class="nav-item">
-              <div class="nav-link dropdown show">
-                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Summary
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <a class="dropdown-item" href="{% url 'plot_summary' child.id %}">charts</a>
-                  <a class="dropdown-item" href="{% url 'summary' child.id %}">list</a>
-                </div>
-              </div>
+              <a class="nav-link" href="{% url 'plot_summary' child.id %}">summary</a>
             </li>
             <li class="nav-item">
               <div class="nav-link dropdown show">
