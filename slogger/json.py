@@ -60,9 +60,7 @@ def get_summary_data_list(request, child_id=None):
     mealtotals = functions.calculate_totals(meal, "meals")
     diapertotals = functions.calculate_totals(diaper, "diapers")
 
-    totals = sleeptotals
-    totals = functions.merge_totals(totals, mealtotals)
-    totals = functions.merge_totals(totals, diapertotals)
+    totals = functions.merge_totals(sleeptotals, mealtotals, diapertotals)
 
     return JsonResponse([{'day': t[0], 'data': t[1]} for t in totals][::-1], safe=False)
 
@@ -80,9 +78,7 @@ def get_summary_data_graph(request, child_id=None):
     mealtotals = functions.calculate_totals(meal, "meals")
     diapertotals = functions.calculate_totals(diaper, "diapers")
 
-    totals = sleeptotals
-    totals = functions.merge_totals(totals, mealtotals)
-    totals = functions.merge_totals(totals, diapertotals)
+    totals = functions.merge_totals(sleeptotals, mealtotals, diapertotals)
 
     response = {
         'day':       [],
