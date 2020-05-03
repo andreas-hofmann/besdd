@@ -48,7 +48,7 @@ def  fetch_specials_from_db(request, child_id):
 
 def get_user_settings(user):
     try:
-        s = models.UserSettings.objects.get(id=user.id)
+        s = models.UserSettings.objects.get(user=user)
     except ObjectDoesNotExist:
         s = models.UserSettings(user=user)
         s.save()
