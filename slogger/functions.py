@@ -18,6 +18,25 @@ def merge_totals(totals, *args):
 
     return totals
 
+def convert_to_totals(data, dict_key, *attributes):
+    totals = {}
+
+    for d in data:
+        my_dt = tz.localtime(d.dt)
+        main_key = str(my_dt.date())
+
+        if not totals.get(main_key):
+            totals[main_key] = { dict_key: [] }
+
+        entry = {}
+
+        for a in attributes:
+            entry[a] = getattr(d, a)
+
+        totals[main_key][dict_key].append(entry)
+
+    return sorted(totals.items(), key=lambda kv: date.fromisoformat(kv[0]))
+
 def calculate_average(totals, key):
     total_sleep = 0
     total_days = 0
