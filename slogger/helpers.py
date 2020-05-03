@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from datetime import datetime
 from django.utils import timezone as tz
 
@@ -44,3 +44,13 @@ def  fetch_specials_from_db(request, child_id):
     measurements = filter_GET_daterage(request, measurements)
 
     return events, diary, measurements
+
+
+def get_user_settings(user):
+    try:
+        s = models.UserSettings.objects.get(id=user.id)
+    except ObjectDoesNotExist:
+        s = models.UserSettings(user=user)
+        s.save()
+
+    return s
