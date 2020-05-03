@@ -13,8 +13,17 @@ Vue.component('summary-entry', {
   },
   methods: {
     secToHours: function(val) {
-      val = parseFloat(val);
+      var val = parseFloat(val);
       return (val/3600).toFixed(1);
+    },
+    avgTime: function(val) {
+      var time = parseFloat(val.time);
+      var count = parseFloat(val.count);
+
+      if (time && count)
+        return (time/3600/count).toFixed(1);
+
+      return 0;
     },
   },
   template: "#summary-entry-template",
@@ -84,26 +93,38 @@ Summary for {{ child.name }}
       <div :id="'collapse'+idx" class="collapse" :class="[ idx === 0 ? 'show' : '']" :aria-labelledby="'heading'+idx" data-parent="#accordion">
         <div class="card-body">
           <div class="container">
+
           <div class="row">
 
-          <div class="col-md">
-          <h5>Sleep total:</h5>
-          <p>
-            [[ secToHours(summary.sum.time) ]] hours in [[ summary.sum.count ]] phases.
-          </p>
+            <div class="col-md"></div>
+            <div class="col-md"> <h3>Sleep</h3> </div>
+            <div class="col-md"></div>
+
           </div>
-          <div class="col-md">
-          <h5>Sleep day:</h5>
-          <p>
-            [[ secToHours(summary.day.time) ]] hours in [[ summary.day.count ]] phases.
-          </p>
-          </div>
-          <div class="col-md">
-          <h5>Sleep night:</h5>
-          <p>
-            [[ secToHours(summary.night.time) ]] hours in [[ summary.night.count ]] phases.
-          </p>
-          </div>
+
+          <div class="row">
+
+            <div class="col-md">
+            <h5>Total:</h5>
+            <p>
+              [[ secToHours(summary.sum.time) ]] hours in [[ summary.sum.count ]] phases.<br>
+              Avg. length [[ avgTime(summary.sum) ]] hours.
+            </p>
+            </div>
+            <div class="col-md">
+            <h5>Day:</h5>
+            <p>
+              [[ secToHours(summary.day.time) ]] hours in [[ summary.day.count ]] phases.<br>
+              Avg. length [[ avgTime(summary.day) ]] hours.
+            </p>
+            </div>
+            <div class="col-md">
+            <h5>Night:</h5>
+            <p>
+              [[ secToHours(summary.night.time) ]] hours in [[ summary.night.count ]] phases.<br>
+              Avg. length [[ avgTime(summary.night) ]] hours.
+            </p>
+            </div>
 
           </div>
           </div>
