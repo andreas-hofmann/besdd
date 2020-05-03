@@ -10,36 +10,11 @@ from . import mixins
 from . import helpers
 from . import decorators
 
-def _fetch_summary_from_db(request, child_id):
-    sleep = models.SleepPhase.objects.filter(child=child_id)
-    sleep = helpers.filter_GET_daterage(request, sleep)
-
-    meal = models.Meal.objects.filter(child=child_id)
-    meal = helpers.filter_GET_daterage(request, meal)
-
-    diaper = models.Diaper.objects.filter(child=child_id)
-    diaper = helpers.filter_GET_daterage(request, diaper)
-
-    return sleep, meal, diaper
-
-
-def  _fetch_specials_from_db(request, child_id):
-    events = models.Event.objects.filter(child=child_id)
-    events = helpers.filter_GET_daterage(request, events)
-
-    diary = models.DiaryEntry.objects.filter(child=child_id)
-    diary = helpers.filter_GET_daterage(request, diary)
-
-    measurements = models.Measurement.objects.filter(child=child_id)
-    measurements = helpers.filter_GET_daterage(request, measurements)
-
-    return events, diary, measurements
-
 
 @login_required
 @decorators.only_own_children
 def get_histogram_data(request, child_id=None, raster=10):
-    sleep, meal, diaper = _fetch_summary_from_db(request, child_id)
+    sleep, meal, diaper = helpers.fetch_summary_from_db(request, child_id)
 
     sleepdata = functions.get_hist_data(sleep, raster, raster)
     mealdata = functions.get_hist_data(meal, raster, raster)
@@ -68,8 +43,8 @@ def get_histogram_data(request, child_id=None, raster=10):
 @login_required
 @decorators.only_own_children
 def get_summary_data_list(request, child_id=None):
-    sleep, meal, diaper = _fetch_summary_from_db(request, child_id)
-    events, diary, measurements = _fetch_specials_from_db(request, child_id)
+    sleep, meal, diaper = helpers.fetch_summary_from_db(request, child_id)
+    events, diary, measurements = helpers.fetch_specials_from_db(request, child_id)
 
     measurements = functions.convert_to_totals(measurements, "measurements", "height", "weight")
     events = functions.convert_to_totals(events, "events", "event", "description")
@@ -91,7 +66,7 @@ def get_summary_data_graph(request, child_id=None):
     def sec_to_h(sec):
         return sec/3600.0
 
-    sleep, meal, diaper = _fetch_summary_from_db(request, child_id)
+    sleep, meal, diaper = helpers.fetch_summary_from_db(request, child_id)
 
     sleeptotals = functions.calculate_sleep_totals(sleep)
     mealtotals = functions.calculate_totals(meal, "meals")
