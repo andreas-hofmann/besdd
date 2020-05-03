@@ -11,6 +11,11 @@ Vue.component('summary-entry', {
     day: { type: String, },
     idx: { type: Number, },
   },
+  data: function() {
+    return {
+      initial_expand: -1, // Row to expand initially. -1 for none.
+    };
+  },
   methods: {
     secToHours: function(val) {
       var val = parseFloat(val);
@@ -84,13 +89,13 @@ Summary for {{ child.name }}
     <div class="card">
       <div class="card-header" :id="'heading'+idx">
         <h5 class="mb-0">
-          <button class="btn btn-link" :class="[ idx !== 0 ? 'collapsed' : '']" data-toggle="collapse" :data-target="'#collapse'+idx" :aria-expanded="[ idx === 0 ? 'true' : '' ]" :aria-controls="'collapse'+idx">
+          <button class="btn btn-link" :class="[ idx !== initial_expand ? 'collapsed' : '']" data-toggle="collapse" :data-target="'#collapse'+idx" :aria-expanded="[ idx === initial_expand ? 'true' : '' ]" :aria-controls="'collapse'+idx">
             [[ day ]]
           </button>
         </h5>
       </div>
 
-      <div :id="'collapse'+idx" class="collapse" :class="[ idx === 0 ? 'show' : '']" :aria-labelledby="'heading'+idx" data-parent="#accordion">
+      <div :id="'collapse'+idx" class="collapse" :class="[ idx === initial_expand ? 'show' : '']" :aria-labelledby="'heading'+idx" data-parent="#accordion">
         <div class="card-body">
           <div class="container">
 
