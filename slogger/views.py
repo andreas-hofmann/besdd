@@ -172,6 +172,10 @@ class ChildUpdateView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+
+        if ctx['child'].created_by != ctx['view'].request.user:
+            raise PermissionDenied("Ediding is only allowed for user's created children")
+
         ctx["headline"] = "Edit child details"
         return ctx
 

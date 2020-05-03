@@ -18,10 +18,12 @@ Parents:
 <br>
 Created on {{ object.dt|dt_localdate }} by {{ object.created_by.username }}.
 
+{% if request.user == child.created_by %}
 <div class="mt-3">
   <a class='btn btn-secondary btn-sm' href='{% url 'child_edit' child.id %}'>
     Edit <i class="ml-2 pt-1 material-icons">edit</i>
   </a>
 </div>
+{% endif %}
 
 {% endblock %}
