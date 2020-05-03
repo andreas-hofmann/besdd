@@ -89,9 +89,30 @@ Summary for {{ child.name }}
     <div class="card">
       <div class="card-header" :id="'heading'+idx">
         <h5 class="mb-0">
-          <button class="btn btn-link" :class="[ idx !== initial_expand ? 'collapsed' : '']" data-toggle="collapse" :data-target="'#collapse'+idx" :aria-expanded="[ idx === initial_expand ? 'true' : '' ]" :aria-controls="'collapse'+idx">
-            [[ day ]]
-          </button>
+
+          <div class="container">
+            <div class="row">
+              <div class="col-xs small mt-2 ml-1">
+                [[ day ]] -
+                [[ secToHours(summary.sum.time) ]] h ([[ summary.sum.count ]] phases).<br>
+              </div>
+
+              <div class="col-xs small mt-1">
+              </div>
+
+              <div class="col-xs ml-auto">
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn" :class="[ idx !== initial_expand ? 'collapsed' : '']" data-toggle="collapse" :data-target="'#collapse'+idx" :aria-expanded="[ idx === initial_expand ? 'true' : '' ]" :aria-controls="'collapse'+idx">
+                    <i v-if="summary.diary" class="mr-2 material-icons">menu_book</i>
+                    <i v-if="summary.events" class="mr-2 material-icons">cake</i>
+                    <i v-if="summary.measurements" class="mr-2 material-icons">speed</i>
+                    [[ day ]]
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </h5>
       </div>
 
