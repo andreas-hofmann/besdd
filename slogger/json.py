@@ -69,12 +69,17 @@ def get_histogram_data(request, child_id=None, raster=10):
 @decorators.only_own_children
 def get_summary_data_list(request, child_id=None):
     sleep, meal, diaper = _fetch_summary_from_db(request, child_id)
+    events, diary, measurements = _fetch_specials_from_db(request, child_id)
+
+    measurements = functions.convert_to_totals(measurements, "measurements", "height", "weight")
+    events = functions.convert_to_totals(events, "events", "event", "description")
+    diary = functions.convert_to_totals(diary, "diary", "title", "content")
 
     sleeptotals = functions.calculate_sleep_totals(sleep)
     mealtotals = functions.calculate_totals(meal, "meals")
     diapertotals = functions.calculate_totals(diaper, "diapers")
 
-    totals = functions.merge_totals(sleeptotals, mealtotals, diapertotals)
+    totals = functions.merge_totals(sleeptotals, mealtotals, diapertotals, measurements, events, diary)
 
     return JsonResponse([{'day': t[0], 'data': t[1]} for t in totals][::-1], safe=False)
 
