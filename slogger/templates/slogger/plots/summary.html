@@ -157,13 +157,13 @@ Summary for {{ child.name }}
             <div v-if="summary.meals || summary.diapers" :id="[ 'mealsdiapers'+idx ]">
               <div class="row">
                 <div v-if="summary.meals" class="col-md">
-                  <h3><u>Meals eaten</u></h3>
+                  <h3><u>Meals</u></h3>
                   <p>
                     [[ summary.meals ]]
                   </p>
                 </div>
                 <div v-if="summary.diapers" class="col-md">
-                  <h3><u>Used diapers</u></h3>
+                  <h3><u>Diapers</u></h3>
                   <p>
                     [[ summary.diapers ]]
                   </p>
