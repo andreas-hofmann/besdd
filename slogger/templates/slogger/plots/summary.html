@@ -41,7 +41,7 @@ var vm = new Vue({
         window: 7,
         from: moment().subtract(7, "days").format("YYYY-MM-DD"),
         to:   moment().format("YYYY-MM-DD"),
-        graph_type: "Timeline",
+        graph_type: "List",
         my_data: {},
       },
       watch: {
@@ -56,13 +56,11 @@ var vm = new Vue({
       methods: {
         update_graph: function () {
             if (this.graph_type === "Timeline") {
-              load_time_graph("my-graph", "{% url 'summary_data_graph' child.id %}", {"from": this.from, "to": this.to});
-                vm.my_data = [];
+                load_time_graph("my-graph", "{% url 'summary_data_graph' child.id %}", {"from": this.from, "to": this.to});
             } else if (this.graph_type === "Histogram") {
-              load_histogram("my-graph", "{% url 'histogram_data' child.id %}", {"from": this.from, "to": this.to});
-                vm.my_data = [];
+                load_histogram("my-graph", "{% url 'histogram_data' child.id %}", {"from": this.from, "to": this.to});
             } else if (this.graph_type === "List") {
-              $.get("{% url 'summary_data_list' child.id %}", {"from": this.from, "to": this.to}, function (data) {
+                $.get("{% url 'summary_data_list' child.id %}", {"from": this.from, "to": this.to}, function (data) {
                 vm.my_data = data;
               });
             }
@@ -92,12 +90,17 @@ Summary for {{ child.name }}
 
           <div class="container">
             <div class="row">
-              <div class="col-xs small mt-2 ml-1">
+              <div v-if="summary.sum" class="col-xs small mt-2 ml-1">
                 [[ day ]] -
-                [[ secToHours(summary.sum.time) ]] h ([[ summary.sum.count ]] phases).<br>
+                <small>Slept [[ secToHours(summary.sum.time) ]] h in [[ summary.sum.count ]] phases.</small>
               </div>
 
-              <div class="col-xs small mt-1">
+              <div v-if="summary.meals" class="col-xs small mt-2 ml-1">
+                <small>[[ summary.meals ]] meals eaten.</small>
+              </div>
+
+              <div v-if="summary.diapers" class="col-xs small mt-2 ml-1">
+                <small>[[ summary.diapers ]] diapers used.</small>
               </div>
 
               <div class="col-xs ml-auto">
@@ -120,39 +123,115 @@ Summary for {{ child.name }}
         <div class="card-body">
           <div class="container">
 
-          <div class="row">
-
-            <div class="col-md"></div>
-            <div class="col-md"> <h3>Sleep</h3> </div>
-            <div class="col-md"></div>
-
-          </div>
-
-          <div class="row">
-
-            <div class="col-md">
-            <h5>Total:</h5>
-            <p>
-              [[ secToHours(summary.sum.time) ]] hours in [[ summary.sum.count ]] phases.<br>
-              Avg. length [[ avgTime(summary.sum) ]] hours.
-            </p>
+            <div v-if="summary.sum" :id="[ 'sleep'+idx ]">
+              <div class="row mb-2">
+                <div class="col-md"></div>
+                <div class="col-md"><h3><u>Sleep</u></h3></div>
+                <div class="col-md"></div>
+              </div>
+              <div class="row">
+                <div class="col-md">
+                <h5>Total:</h5>
+                <p>
+                  [[ secToHours(summary.sum.time) ]] hours in [[ summary.sum.count ]] phases.<br>
+                  Avg. length [[ avgTime(summary.sum) ]] hours.
+                </p>
+                </div>
+                <div class="col-md">
+                <h5>Day:</h5>
+                <p>
+                  [[ secToHours(summary.day.time) ]] hours in [[ summary.day.count ]] phases.<br>
+                  Avg. length [[ avgTime(summary.day) ]] hours.
+                </p>
+                </div>
+                <div class="col-md">
+                <h5>Night:</h5>
+                <p>
+                  [[ secToHours(summary.night.time) ]] hours in [[ summary.night.count ]] phases.<br>
+                  Avg. length [[ avgTime(summary.night) ]] hours.
+                </p>
+                </div>
+              </div>
             </div>
-            <div class="col-md">
-            <h5>Day:</h5>
-            <p>
-              [[ secToHours(summary.day.time) ]] hours in [[ summary.day.count ]] phases.<br>
-              Avg. length [[ avgTime(summary.day) ]] hours.
-            </p>
-            </div>
-            <div class="col-md">
-            <h5>Night:</h5>
-            <p>
-              [[ secToHours(summary.night.time) ]] hours in [[ summary.night.count ]] phases.<br>
-              Avg. length [[ avgTime(summary.night) ]] hours.
-            </p>
+
+            <div v-if="summary.meals || summary.diapers" :id="[ 'measurementsdiapers'+idx ]">
+              <div class="row">
+                <div v-if="summary.meals" class="col-md">
+                  <h3><u>Meals eaten</u></h3>
+                  <p>
+                    [[ summary.meals ]]
+                  </p>
+                </div>
+                <div v-if="summary.diapers" class="col-md">
+                  <h3><u>Used diapers</u></h3>
+                  <p>
+                    [[ summary.diapers ]]
+                  </p>
+                </div>
+              </div>
             </div>
 
-          </div>
+            <div v-if="summary.measurements" :id="[ 'measurements'+idx ]">
+              <div class="row">
+                <div class="col-md"></div>
+                <div class="col-md"><h3><u>Measurements</u></h3></div>
+                <div class="col-md"></div>
+              </div>
+              <div v-for="measurement in summary.measurements">
+                <div class="row mb-2">
+                  <div v-if="measurement.height" class="col-md">
+                    <h4>Height</h4>
+                    <p>
+                      [[ measurement.height ]]
+                    </p>
+                  </div>
+                  <div v-if="measurement.weight" class="col-md">
+                    <h4>Weight</h4>
+                    <p>
+                      [[ measurement.weight ]]
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="summary.events" :id="[ 'events'+idx ]">
+              <div class="row">
+                <div class="col-md"></div>
+                <div class="col-md"> <h3><u>Events</u></h3></div>
+                <div class="col-md"></div>
+              </div>
+              <div v-for="event in summary.events">
+                <div class="row mb-2">
+                  <div class="col-md">
+                    <h4>[[ event.event ]]</h4>
+                    <p>
+                      [[ event.description ]]
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="summary.diary" :id="[ 'diary'+idx ]">
+              <div class="row">
+                <div class="col-md"></div>
+                <div class="col-md"><h3><u>Diary</u></h3> </div>
+                <div class="col-md"></div>
+              </div>
+              <div v-for="entry in summary.diary">
+                <div class="row mb-2">
+                  <div class="col-md">
+                    <h4>[[ entry.title ]]</h4>
+                    <p>
+                      [[ entry.content ]]
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
           </div>
         </div>
       </div>
