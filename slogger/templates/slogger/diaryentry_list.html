@@ -16,6 +16,7 @@ Diary entries for {{ child.name }}
         <thead class="thead-dark">
           <tr>
             <th scope="col-xs-3">Date</th>
+            <th scope="col-xs-2">Title</th>
             <th scope="col-xs-2">Text</th>
             <th scope="col-xs">Actions</th>
           </tr>
@@ -25,12 +26,13 @@ Diary entries for {{ child.name }}
           {% for o in object_list %}
           <tr>
             <th class="col-xs-3" scope="row"> {{ o.dt|dt_localdate }}</th>
-            <td class="col-xs-2">{{ s.content }}</td>
+            <td class="col-xs-2">{{ o.title }}</td>
+            <td class="col-xs-2">{{ o.content }}</td>
             <td class="col-xs">
-              <a class='btn btn-secondary btn-sm' href='{% url 'diary_edit' child.id 0.id %}'>
+              <a class='btn btn-secondary btn-sm' href='{% url 'diary_edit' child.id o.id %}'>
                 <i class="material-icons">edit</i>
               </a>
-              <a class='btn btn-danger btn-sm' href='{% url 'diary_delete' child.id 0.id %}'>
+              <a class='btn btn-danger btn-sm' href='{% url 'diary_delete' child.id o.id %}'>
                 <i class="material-icons">delete</i>
               </a>
            </td>

@@ -28,7 +28,7 @@ Events for {{ child.name }}
           <tr>
             <th class="col-xs-3" scope="row"> {{ o.dt|dt_localdate }}</th>
             <td class="col-xs-2">{{ o.dt|dt_localtime }}</td>
-            <td class="col-xs-2">{{ o.name }}</td>
+            <td class="col-xs-2">{{ o.event }}</td>
             <td class="col-xs-2">{{ o.description }}</td>
             <td class="col-xs">
               <a class='btn btn-secondary btn-sm' href='{% url 'events_edit' child.id o.id %}'>
