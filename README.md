@@ -12,10 +12,11 @@ Consider this beta quality at best - stuff may work or not and may break unexpec
 ### Features:
 
 - Log sleep phases, meals and changed diapers
-- Display the data in a summary list or in graphical form
 - Log height/weight measurements
 - Log special events (like first steps, words, etc.)
 - Log diary entries
+- Allow other users to add+view child data
+- Display the data in a summary list or in graphical form
 
 Sleep, meals and diapers work best currently, since we're using it on a daily basis. More
 stuff will be added when I find some spare time.
