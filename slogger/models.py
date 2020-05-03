@@ -8,10 +8,19 @@ from .mixins import AttributeModelMixin
 class UserSettings(models.Model,
                    AttributeModelMixin):
 
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+
+    paginate_by = models.IntegerField("Paginate by", default=20)
+    date_rage_days = models.IntegerField("Default summary date range", default=14)
+
+    sleep_enabled = models.BooleanField("Draw sleep data in graph by default", default=True);
+    meals_enabled = models.BooleanField("Draw sleep data in graph by default", default=False);
+    diapers_enabled = models.BooleanField("Draw sleep data in graph by default", default=False);
+
+    default_child = models.ForeignKey("Child", null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Settings for { user.name }"
+        return f"Settings for { self.user }"
 
 
 class Child(models.Model,
