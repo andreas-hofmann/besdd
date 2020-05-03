@@ -140,9 +140,6 @@ def get_check(request, child_id=None):
     children = models.Child.objects.filter(parents__id=request.user.id)
     child = get_object_or_404(models.Child, id=child_id)
 
-    if child not in children:
-        raise PermissionDenied("Invalid child requested")
-
     response = {
         'eat':    {},
         'sleep':  {},

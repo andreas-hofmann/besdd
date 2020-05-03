@@ -15,7 +15,7 @@ def only_own_children(view):
         if not request.user.is_authenticated:
             raise PermissionDenied("Invalid child requested")
 
-        if request.user not in child.parents.all():
+        if (request.user not in child.parents.all()) and (request.user != child.created_by):
             raise PermissionDenied("Invalid child requested")
 
         return view(request, *args, **kwargs)

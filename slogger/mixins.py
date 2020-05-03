@@ -23,7 +23,7 @@ class AddChildContextViewMixin:
 
             children = models.Child.objects.filter(parents__id=self.request.user.id)
 
-            if child and child not in children:
+            if child and not (child in children or self.request.user == child.created_by ):
                 raise PermissionDenied("Invalid child requested")
 
             context["child"] = child
