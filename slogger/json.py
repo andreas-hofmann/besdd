@@ -22,6 +22,20 @@ def _fetch_summary_from_db(request, child_id):
 
     return sleep, meal, diaper
 
+
+def  _fetch_specials_from_db(request, child_id):
+    events = models.Event.objects.filter(child=child_id)
+    events = helpers.filter_GET_daterage(request, events)
+
+    diary = models.DiaryEntry.objects.filter(child=child_id)
+    diary = helpers.filter_GET_daterage(request, diary)
+
+    measurements = models.Measurement.objects.filter(child=child_id)
+    measurements = helpers.filter_GET_daterage(request, measurements)
+
+    return events, diary, measurements
+
+
 @login_required
 @decorators.only_own_children
 def get_histogram_data(request, child_id=None, raster=10):
