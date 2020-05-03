@@ -68,7 +68,7 @@ class ChildForm(GenericHelperForm):
 class MeasurementForm(GenericHelperForm):
     class Meta:
         model = models.Measurement
-        exclude = ['child']
+        exclude = ['child', 'created_by']
 
 class FoodForm(GenericHelperForm):
     class Meta:
@@ -121,9 +121,9 @@ class DiaperForm(GenericHelperForm):
 class EventForm(GenericHelperForm):
     class Meta:
         model = models.Event
-        exclude = ['child']
+        exclude = ['child', 'created_by']
 
 class DiaryEntryForm(GenericHelperForm):
     class Meta:
         model = models.DiaryEntry
-        exclude = ['child']
+        exclude = ['child', 'created_by']
