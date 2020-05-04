@@ -82,6 +82,18 @@ class MealForm(GenericHelperForm):
 
     food = forms.ModelMultipleChoiceField(models.Food.objects.none())
 
+    def __init__(self, child=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if not child and kwargs['initial'].get('child'):
+            child = kwargs['initial']['child']
+        if not child:
+            child = kwargs['instance'].child
+
+        self.fields['food'].queryset = models.Food.objects.filter(
+            created_by__in=child.parents.all()
+        )
+
 class DiaperContentForm(GenericHelperForm):
     class Meta:
         model = models.DiaperContent
@@ -93,6 +105,18 @@ class DiaperForm(GenericHelperForm):
         exclude = ['child', 'created_by']
 
     content = forms.ModelMultipleChoiceField(models.DiaperContent.objects.none())
+
+    def __init__(self, child=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if not child and kwargs['initial'].get('child'):
+            child = kwargs['initial']['child']
+        if not child:
+            child = kwargs['instance'].child
+
+        self.fields['content'].queryset = models.DiaperContent.objects.filter(
+            created_by__in=child.parents.all()
+        )
 
 class EventForm(GenericHelperForm):
     class Meta:

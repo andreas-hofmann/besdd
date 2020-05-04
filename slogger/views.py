@@ -364,14 +364,7 @@ class MealCreateView(LoginRequiredMixin,
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["headline"] = "Add meal"
-
-        form = ctx.get("form")
-        if form:
-            child = models.Child.objects.get(id=ctx['child'].id)
-            form.fields['food'].queryset = models.Food.objects.filter(
-                created_by__in=child.parents.all()
-            )
-
+        ctx["form"] = forms.MealForm(child = models.Child.objects.get(id=self.kwargs.get('child_id')))
         return ctx
 
     def get_success_url(self):
@@ -486,14 +479,7 @@ class DiaperCreateView(LoginRequiredMixin,
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["headline"] = "Add a changed diaper"
-
-        form = ctx.get("form")
-        if form:
-            child = models.Child.objects.get(id=ctx['child'].id)
-            form.fields['content'].queryset = models.DiaperContent.objects.filter(
-                created_by__in=child.parents.all()
-            )
-
+        ctx["form"] = forms.DiaperForm(child = models.Child.objects.get(id=self.kwargs.get('child_id')))
         return ctx
 
     def get_success_url(self):
