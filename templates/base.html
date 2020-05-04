@@ -306,6 +306,22 @@
 {% block script %}
 {% endblock %}
 
+<div class="container mt-3">
+  <div class="row" style="font-size:11px;">
+    <div class="col-md ml-auto"> </div>
+    <div class="col-xs text-center">
+    <small><a class="text-muted" href="{% static 'html/imprint.html' %}">Impressum</a></small>
+    </div>
+    <div class="col-xs mx-3 text-center">
+    <small><a class="text-muted" href="{% static 'html/disclaimer.html' %}">Disclaimer</a></small>
+    </div>
+    <div class="col-xs text-center">
+    <small><a class="text-muted" href="{% static 'html/privacy.html' %}">Datenschutzerklärung</a></small>
+    </div>
+    <div class="col-md mr-auto"> </div>
+  </div>
+</div>
+
 <script type="text/javascript" src="{% static 'js/cookieinfo.min.js' %}"></script>
 
 </body>
