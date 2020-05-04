@@ -39,7 +39,7 @@ var vm = new Vue({
       el: '#app',
       data: {
         window: 7,
-        from: moment().subtract(7, "days").format("YYYY-MM-DD"),
+        from: moment().subtract({{ user.usersettings.date_range_days }}, "days").format("YYYY-MM-DD"),
         to:   moment().format("YYYY-MM-DD"),
         graph_type: "List",
         my_data: {},
