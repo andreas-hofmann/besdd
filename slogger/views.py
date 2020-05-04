@@ -67,7 +67,10 @@ class SleepPhaseListView(LoginRequiredMixin,
                          mixins.AddChildContextViewMixin,
                          ListView):
     model = models.SleepPhase
-    paginate_by = 20
+
+    def setup(self, request, *args, **kwargs):
+        self.paginate_by = request.user.usersettings.paginate_by
+        return super().setup(request, *args, **kwargs)
 
     def get_queryset(self, **kwargs):
         return models.SleepPhase.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
@@ -198,7 +201,10 @@ class SummaryListView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
                       ListView):
     template_name = "slogger/summary.html"
-    paginate_by = 10
+
+    def setup(self, request, *args, **kwargs):
+        self.paginate_by = request.user.usersettings.paginate_by
+        return super().setup(request, *args, **kwargs)
 
     def get_queryset(self, **kwargs):
         data = models.SleepPhase.objects.filter(child=self.kwargs.get('child_id'))
@@ -224,7 +230,10 @@ class MeasurementListView(LoginRequiredMixin,
                           ListView):
     model = models.Measurement
     pk_url_kwarg = "child_id"
-    paginate_by = 20
+
+    def setup(self, request, *args, **kwargs):
+        self.paginate_by = request.user.usersettings.paginate_by
+        return super().setup(request, *args, **kwargs)
 
     def get_queryset(self, **kwargs):
         return models.Measurement.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
@@ -286,7 +295,10 @@ class FoodListView(LoginRequiredMixin,
     model = models.Food
     template_name ="generic_list.html"
     pk_url_kwarg = "child_id"
-    paginate_by = 20
+
+    def setup(self, request, *args, **kwargs):
+        self.paginate_by = request.user.usersettings.paginate_by
+        return super().setup(request, *args, **kwargs)
 
     def get_queryset(self, **kwargs):
         return models.Food.objects.filter(created_by=self.request.user.id).order_by("-dt")
@@ -330,7 +342,10 @@ class MealListView(LoginRequiredMixin,
                    ListView):
     model = models.Meal
     pk_url_kwarg = "child_id"
-    paginate_by = 20
+
+    def setup(self, request, *args, **kwargs):
+        self.paginate_by = request.user.usersettings.paginate_by
+        return super().setup(request, *args, **kwargs)
 
     def get_queryset(self, **kwargs):
         return models.Meal.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
@@ -401,7 +416,10 @@ class DiaperContentListView(LoginRequiredMixin,
     model = models.DiaperContent
     template_name ="generic_list.html"
     pk_url_kwarg = "child_id"
-    paginate_by = 20
+
+    def setup(self, request, *args, **kwargs):
+        self.paginate_by = request.user.usersettings.paginate_by
+        return super().setup(request, *args, **kwargs)
 
     def get_queryset(self, **kwargs):
         return models.DiaperContent.objects.filter(created_by=self.request.user.id).order_by("-dt")
@@ -446,7 +464,10 @@ class DiaperListView(LoginRequiredMixin,
                      ListView):
     model = models.Diaper
     pk_url_kwarg = "child_id"
-    paginate_by = 20
+
+    def setup(self, request, *args, **kwargs):
+        self.paginate_by = request.user.usersettings.paginate_by
+        return super().setup(request, *args, **kwargs)
 
     def get_queryset(self, **kwargs):
         return models.Diaper.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
@@ -516,7 +537,10 @@ class EventListView(LoginRequiredMixin,
                     ListView):
     model = models.Event
     pk_url_kwarg = "child_id"
-    paginate_by = 20
+
+    def setup(self, request, *args, **kwargs):
+        self.paginate_by = request.user.usersettings.paginate_by
+        return super().setup(request, *args, **kwargs)
 
     def get_queryset(self, **kwargs):
         return models.Event.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
@@ -578,7 +602,10 @@ class DiaryEntryListView(LoginRequiredMixin,
                          ListView):
     model = models.DiaryEntry
     pk_url_kwarg = "child_id"
-    paginate_by = 20
+
+    def setup(self, request, *args, **kwargs):
+        self.paginate_by = request.user.usersettings.paginate_by
+        return super().setup(request, *args, **kwargs)
 
     def get_queryset(self, **kwargs):
         return models.DiaryEntry.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
