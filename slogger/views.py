@@ -634,7 +634,13 @@ class SettingsUpdateView(LoginRequiredMixin,
 
         ctx = super().get_context_data(**kwargs)
         ctx["headline"] = "Edit user settings"
+
+        form = ctx.get("form")
+        if form:
+            form.fields['default_child'].queryset = models.Child.objects.filter(
+                parents=self.request.user
+            )
         return ctx
 
     def get_success_url(self):
-        return reverse_lazy('settings')
+        return reverse_lazy('settings', kwargs= {'pk': self.request.user.usersettings.id })
