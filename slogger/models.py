@@ -11,7 +11,7 @@ class UserSettings(models.Model,
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
 
     paginate_by = models.IntegerField("Paginate by", default=20)
-    date_rage_days = models.IntegerField("Default summary date range", default=14)
+    date_range_days = models.IntegerField("Default summary date range", default=14)
 
     sleep_enabled = models.BooleanField("Draw sleep data in graph by default", default=True);
     meals_enabled = models.BooleanField("Draw sleep data in graph by default", default=False);
