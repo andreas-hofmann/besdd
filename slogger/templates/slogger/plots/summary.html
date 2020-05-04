@@ -43,6 +43,11 @@ var vm = new Vue({
         to:   moment().format("YYYY-MM-DD"),
         graph_type: "List",
         my_data: {},
+        plots_enabled: {
+          'sleep':   "{{ user.usersettings.sleep_enabled }}",
+          'meals':   "{{ user.usersettings.meals_enabled }}",
+          'diapers': "{{ user.usersettings.diapers_enabled }}",
+        },
       },
       watch: {
         from:       function (newDate, oldDate) { this.debounce_update(); },
@@ -55,10 +60,23 @@ var vm = new Vue({
       },
       methods: {
         update_graph: function () {
+            plots = {
+              'sleep':    this.plots_enabled.sleep == "True" ? true : "legendonly",
+              'meals':    this.plots_enabled.meals == "True" ? true : "legendonly",
+              'diapers':  this.plots_enabled.diapers == "True" ? true : "legendonly",
+            };
             if (this.graph_type === "Timeline") {
-                load_time_graph("my-graph", "{% url 'summary_data_graph' child.id %}", {"from": this.from, "to": this.to});
+                load_time_graph("my-graph", "{% url 'summary_data_graph' child.id %}", {
+                  "from": this.from, "to": this.to,
+                }, {
+                  "plots": plots,
+                });
             } else if (this.graph_type === "Histogram") {
-                load_histogram("my-graph", "{% url 'histogram_data' child.id %}", {"from": this.from, "to": this.to});
+                load_histogram("my-graph", "{% url 'histogram_data' child.id %}", {
+                  "from": this.from, "to": this.to,
+                }, {
+                  "plots": plots,
+                });
             } else if (this.graph_type === "List") {
                 $.get("{% url 'summary_data_list' child.id %}", {"from": this.from, "to": this.to}, function (data) {
                 vm.my_data = data;
