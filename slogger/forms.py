@@ -127,3 +127,8 @@ class DiaryEntryForm(GenericHelperForm):
     class Meta:
         model = models.DiaryEntry
         exclude = ['child', 'created_by']
+
+class UserSettingsForm(GenericHelperForm):
+    class Meta:
+        model = models.UserSettings
+        exclude = ['user']

@@ -619,3 +619,22 @@ class DiaryEntryDeleteView(LoginRequiredMixin,
 
     def get_success_url(self):
         return reverse_lazy('diary', kwargs = {'child_id': self.kwargs['child_id']})
+
+
+class SettingsUpdateView(LoginRequiredMixin,
+                         UpdateView):
+    model = models.UserSettings
+    template_name ="generic_form.html"
+    success_message = "Settings updated."
+    form_class = forms.UserSettingsForm
+
+    def get_context_data(self, **kwargs):
+        if self.kwargs['pk'] != self.request.user.usersettings.id:
+            raise PermissionDenied("Editing is only allowed for own settings.")
+
+        ctx = super().get_context_data(**kwargs)
+        ctx["headline"] = "Edit user settings"
+        return ctx
+
+    def get_success_url(self):
+        return reverse_lazy('settings')

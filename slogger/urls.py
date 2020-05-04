@@ -8,6 +8,8 @@ urlpatterns = [
     path('children/add/',                           views.ChildCreateView.as_view(),        name="child_add"),
     path('children/<int:child_id>/edit/',           views.ChildUpdateView.as_view(),        name="child_edit"),
 
+    path('settings/<int:pk>/',                      views.SettingsUpdateView.as_view(),     name="settings"),
+
     path('foods/',                                  views.FoodListView.as_view(),           name="foods"),
     path('foods/add/',                              views.FoodCreateView.as_view(),         name="foods_add"),
     path('foods/edit/<int:pk>/',                    views.FoodUpdateView.as_view(),         name="foods_edit"),
