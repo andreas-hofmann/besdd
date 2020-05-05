@@ -30,9 +30,10 @@ class IndexView(mixins.AddChildContextViewMixin,
     def render_to_response(self, context, **response_kwargs):
         if self.request.user.is_authenticated:
             children = models.Child.objects.filter(parents__id=self.request.user.id)
-            if self.request.user.is_authenticated \
-                and self.request.user.usersettings.default_child:
-                return redirect('child', child_id=s.default_child.id)
+            if self.request.user.is_authenticated:
+                s = self.request.user.usersettings
+                if s.default_child:
+                    return redirect('child', child_id=s.default_child.id)
 
             if children:
                 return redirect('child', child_id=children.reverse()[0].id)
