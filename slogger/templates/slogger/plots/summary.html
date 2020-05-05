@@ -284,15 +284,15 @@ Summary for {{ child.name }}
     </div>
 
     <div class="row mb-2">
-      <div class="col-sm"></div>
-      <div class="col-xs-3">
+      <div class="col-xs"></div>
+      <div class="col-xs-3 mx-auto">
         Select time range:
       </div>
-      <div class="col-sm"></div>
+      <div class="col-xs"></div>
     </div>
 
     <div class="row">
-        <div class='col-sm'></div>
+        <div class='col-xs mr-auto'></div>
         <div class="col-xs-3 mx-2">
           From:
           <div class='input-group'>
@@ -305,12 +305,12 @@ Summary for {{ child.name }}
               <input v-model="to" @changed="to = $event.target.value" type='date' class="form-control" />
           </div>
         </div>
-        <div class='col-sm'></div>
+        <div class='col-xs ml-auto'></div>
     </div>
 
     <div class="row">
-        <div class='col-sm'></div>
-        <div class='col-xs-2'>
+        <div class='col-xs '></div>
+        <div class='col-xs-2 mx-auto'>
           Shift time window (by days):
           <div class="input-group mb-5">
              <div @click="move_window(-1);"class="input-group-prepend1 page-link" aria-label="Previous">
@@ -324,7 +324,7 @@ Summary for {{ child.name }}
              </div>
           </div>
         </div>
-        <div class='col-sm'></div>
+        <div class='col-xs'></div>
     </div>
 </div>
 
