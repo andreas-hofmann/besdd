@@ -53,7 +53,7 @@ def calculate_average(totals, key):
     except ZeroDivisionError:
         return 0
 
-def calculate_totals(data, dict_key):
+def calculate_totals(data, dict_key, h_day=8, h_night=19):
     totals = {}
 
     last_d = None
@@ -63,15 +63,27 @@ def calculate_totals(data, dict_key):
 
         if not totals.get(main_key):
             totals[main_key] = {
-                dict_key: {
-                    "count": 0,
-                    "time": 0,
-                }
             }
 
-        totals[main_key][dict_key]['count'] += 1
+        if not totals[main_key].get(dict_key):
+            totals[main_key][dict_key] = {
+                'sum':   { "count": 0, "time": 0 },
+                'day':   { "count": 0, "time": 0 },
+                'night': { "count": 0, "time": 0 },
+            }
+
+        duration_secs = 0
+        totals[main_key][dict_key]['sum']['count'] += 1
         if last_d:
-            totals[main_key][dict_key]['time'] += (d.dt-last_d.dt).total_seconds()
+            duration_secs = (d.dt-last_d.dt).total_seconds()
+            totals[main_key][dict_key]['sum']['time'] += duration_secs
+
+        key = 'night'
+        if  my_dt.time() >= time(hour=h_day) and my_dt.time() <= time(hour=h_night):
+            key = 'day'
+
+        totals[main_key][dict_key][key]['time'] += duration_secs
+        totals[main_key][dict_key][key]['count'] += 1
 
         last_d = d
 

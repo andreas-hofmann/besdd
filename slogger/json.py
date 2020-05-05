@@ -56,12 +56,12 @@ def get_summary_data_list(request, child_id=None):
     events = functions.convert_to_totals(events, "events", "event", "description")
     diary = functions.convert_to_totals(diary, "diary", "title", "content")
 
-    sleeptotals = functions.calculate_sleep_totals(sleep,
-        request.user.usersettings.start_hour_day,
-        request.user.usersettings.start_hour_night,
-    )
-    mealtotals = functions.calculate_totals(meal, "meals")
-    diapertotals = functions.calculate_totals(diaper, "diapers")
+    h_day = request.user.usersettings.start_hour_day
+    h_night = request.user.usersettings.start_hour_night
+
+    sleeptotals = functions.calculate_sleep_totals(sleep, h_day, h_night)
+    mealtotals = functions.calculate_totals(meal, "meals", h_day, h_night)
+    diapertotals = functions.calculate_totals(diaper, "diapers", h_day, h_night)
 
     totals = functions.merge_totals(sleeptotals, mealtotals, diapertotals, measurements, events, diary)
 
@@ -77,12 +77,12 @@ def get_summary_data_graph(request, child_id=None):
 
     sleep, meal, diaper = helpers.fetch_summary_from_db(request, child_id)
 
-    sleeptotals = functions.calculate_sleep_totals(sleep,
-        request.user.usersettings.start_hour_day,
-        request.user.usersettings.start_hour_night,
-    )
-    mealtotals = functions.calculate_totals(meal, "meals")
-    diapertotals = functions.calculate_totals(diaper, "diapers")
+    h_day = request.user.usersettings.start_hour_day
+    h_night = request.user.usersettings.start_hour_night
+
+    sleeptotals = functions.calculate_sleep_totals(sleep, h_day, h_night)
+    mealtotals = functions.calculate_totals(meal, "meals", h_day, h_night)
+    diapertotals = functions.calculate_totals(diaper, "diapers", h_day, h_night)
 
     totals = functions.merge_totals(sleeptotals, mealtotals, diapertotals)
 

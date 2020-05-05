@@ -171,21 +171,64 @@ Summary for {{ child.name }}
               </div>
             </div>
 
-            <div v-if="summary.meals || summary.diapers" :id="[ 'mealsdiapers'+idx ]">
+            <div v-if="summary.meals" :id="[ 'meals'+idx ]">
+              <div class="row mb-2">
+                <div class="col-md"></div>
+                <div class="col-md"><h3><u>Meals</u></h3></div>
+                <div class="col-md"></div>
+              </div>
               <div class="row">
-                <div v-if="summary.meals" class="col-md">
-                  <h3><u>Meals</u></h3>
-                  <p>
-                    Count: [[ summary.meals.count ]]<br>
-                    Avg. interval [[ avgTime(summary.meals) ]] hours.
-                  </p>
+                <div class="col-md">
+                <h5>Total:</h5>
+                <p>
+                  [[ summary.meals.sum.count ]] meals eaten.<br>
+                  Avg. inerval [[ avgTime(summary.meals.sum) ]] hours.
+                </p>
                 </div>
-                <div v-if="summary.diapers" class="col-md">
-                  <h3><u>Diapers</u></h3>
-                  <p>
-                    Count: [[ summary.diapers.count ]]</br>
-                    Avg. interval [[ avgTime(summary.diapers) ]] hours.
-                  </p>
+                <div class="col-md">
+                <h5>Day:</h5>
+                <p>
+                  [[ summary.meals.day.count ]] meals eaten.<br>
+                  Avg. inerval [[ avgTime(summary.meals.day) ]] hours.
+                </p>
+                </div>
+                <div class="col-md">
+                <h5>Night:</h5>
+                <p>
+                  [[ summary.meals.night.count ]] meals eaten.<br>
+                  Avg. inerval [[ avgTime(summary.meals.night) ]] hours.
+                </p>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="summary.diapers" :id="[ 'diapers'+idx ]">
+              <div class="row mb-2">
+                <div class="col-md"></div>
+                <div class="col-md"><h3><u>Diapers</u></h3></div>
+                <div class="col-md"></div>
+              </div>
+              <div class="row">
+                <div class="col-md">
+                <h5>Total:</h5>
+                <p>
+                  [[ summary.diapers.sum.count ]] diapers used.<br>
+                  Avg. inerval [[ avgTime(summary.diapers.sum) ]] hours.
+                </p>
+                </div>
+                <div class="col-md">
+                <h5>Day:</h5>
+                <p>
+                  [[ summary.diapers.day.count ]] diapers used.<br>
+                  Avg. inerval [[ avgTime(summary.diapers.day) ]] hours.
+                </p>
+                </div>
+                <div class="col-md">
+                <h5>Night:</h5>
+                <p>
+                  [[ summary.diapers.night.count ]] diapers used.<br>
+                  Avg. inerval [[ avgTime(summary.diapers.night) ]] hours.
+                </p>
                 </div>
               </div>
             </div>
