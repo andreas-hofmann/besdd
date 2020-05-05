@@ -14,8 +14,8 @@ class UserSettings(models.Model,
     date_range_days = models.IntegerField("Default summary date range", default=14)
 
     sleep_enabled = models.BooleanField("Draw sleep data in graph by default", default=True);
-    meals_enabled = models.BooleanField("Draw sleep data in graph by default", default=False);
-    diapers_enabled = models.BooleanField("Draw sleep data in graph by default", default=False);
+    meals_enabled = models.BooleanField("Draw meal data in graph by default", default=False);
+    diapers_enabled = models.BooleanField("Draw diaper data in graph by default", default=False);
 
     default_child = models.ForeignKey("Child", null=True, blank=True, on_delete=models.CASCADE)
 
