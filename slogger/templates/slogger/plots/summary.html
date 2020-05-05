@@ -113,11 +113,11 @@ Summary for {{ child.name }}
               </div>
 
               <div v-if="summary.meals" class="col-xs small mt-2 ml-1">
-                <small>[[ summary.meals ]] meals eaten.</small>
+                <small>[[ summary.meals.count ]] meals eaten.</small>
               </div>
 
               <div v-if="summary.diapers" class="col-xs small mt-2 ml-1">
-                <small>[[ summary.diapers ]] diapers used.</small>
+                <small>[[ summary.diapers.count ]] diapers used.</small>
               </div>
 
               <div class="col-xs ml-auto">
@@ -176,13 +176,15 @@ Summary for {{ child.name }}
                 <div v-if="summary.meals" class="col-md">
                   <h3><u>Meals</u></h3>
                   <p>
-                    [[ summary.meals ]]
+                    Count: [[ summary.meals.count ]]<br>
+                    Avg. interval [[ avgTime(summary.meals) ]] hours.
                   </p>
                 </div>
                 <div v-if="summary.diapers" class="col-md">
                   <h3><u>Diapers</u></h3>
                   <p>
-                    [[ summary.diapers ]]
+                    Count: [[ summary.diapers.count ]]</br>
+                    Avg. interval [[ avgTime(summary.diapers) ]] hours.
                   </p>
                 </div>
               </div>

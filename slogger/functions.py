@@ -56,14 +56,24 @@ def calculate_average(totals, key):
 def calculate_totals(data, dict_key):
     totals = {}
 
+    last_d = None
     for d in data:
         my_dt = tz.localtime(d.dt)
         main_key = str(my_dt.date())
 
         if not totals.get(main_key):
-            totals[main_key] = { dict_key: 0 }
+            totals[main_key] = {
+                dict_key: {
+                    "count": 0,
+                    "time": 0,
+                }
+            }
 
-        totals[main_key][dict_key] += 1
+        totals[main_key][dict_key]['count'] += 1
+        if last_d:
+            totals[main_key][dict_key]['time'] += (d.dt-last_d.dt).total_seconds()
+
+        last_d = d
 
     return sorted(totals.items(), key=lambda kv: date.fromisoformat(kv[0]))
 

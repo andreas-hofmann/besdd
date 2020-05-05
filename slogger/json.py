@@ -114,11 +114,11 @@ def get_summary_data_graph(request, child_id=None):
         except:
             response['night_cnt'].append(0)
         try:
-            response['diapers'].append(d[1]['diapers'])
+            response['diapers'].append(d[1]['diapers']['count'])
         except:
             response['diapers'].append(0)
         try:
-            response['meals'].append(d[1]['meals'])
+            response['meals'].append(d[1]['meals']['count'])
         except:
             response['meals'].append(0)
 
