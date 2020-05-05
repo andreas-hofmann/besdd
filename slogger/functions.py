@@ -135,7 +135,11 @@ def get_hist_data(data, raster, resolution):
             e = d.dt_end.replace(second=0, microsecond=0)
         except AttributeError:
             # We have no end date. Just increase a single time and go on.
-            hist_data[tz.localtime(s).time().strftime("%H:%M")] += 1
+            k = tz.localtime(s).time().strftime("%H:%M")
+            if not hist_data.get(k):
+                hist_data[k] = 1
+            else:
+                hist_data[k] += 1
             continue
 
         while (e.minute % raster) != 0:

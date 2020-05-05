@@ -15,10 +15,11 @@ from . import decorators
 @decorators.only_own_children
 def get_histogram_data(request, child_id=None, raster=10):
     sleep, meal, diaper = helpers.fetch_summary_from_db(request, child_id)
+    mdfactor=6
 
     sleepdata = functions.get_hist_data(sleep, raster, raster)
-    mealdata = functions.get_hist_data(meal, raster, raster)
-    diaperdata = functions.get_hist_data(diaper, raster, raster)
+    mealdata = functions.get_hist_data(meal, raster*mdfactor, raster*mdfactor)
+    diaperdata = functions.get_hist_data(diaper, raster*mdfactor, raster*mdfactor)
 
     response = {
         'time':  [],
@@ -32,10 +33,12 @@ def get_histogram_data(request, child_id=None, raster=10):
         response['sleep'].append(d[1])
 
     for d in mealdata:
-        response['meals'].append(d[1])
+        for i in range(mdfactor):
+            response['meals'].append(d[1])
 
     for d in diaperdata:
-        response['diapers'].append(d[1])
+        for i in range(mdfactor):
+            response['diapers'].append(d[1])
 
     return JsonResponse(response)
 
