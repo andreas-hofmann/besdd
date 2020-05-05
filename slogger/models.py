@@ -1,5 +1,8 @@
 from django.db import models
+from django.db.models import signals
+from django.dispatch import receiver
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.utils import timezone as tz
 
@@ -27,6 +30,15 @@ class UserSettings(models.Model,
 
     def __str__(self):
         return f"Settings for { self.user }"
+
+
+@receiver(signals.post_save, sender=get_user_model())
+def default_settings(sender, instance, created, **kwargs):
+    try:
+        UserSettings.objects.get(user=instance)
+    except ObjectDoesNotExist:
+        defaults = UserSettings(user=instance)
+        defaults.save()
 
 
 class Child(models.Model,
