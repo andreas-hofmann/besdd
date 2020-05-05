@@ -19,6 +19,12 @@ class UserSettings(models.Model,
 
     default_child = models.ForeignKey("Child", null=True, blank=True, on_delete=models.CASCADE)
 
+    start_hour_day = models.IntegerField("Day starts at (h)", default=8)
+    start_hour_night = models.IntegerField("night starts at (h)", default=19)
+
+    histogram_raster = models.IntegerField("Time raster for histogram (minutes)", default=10)
+    histogram_factor_md = models.IntegerField("Time factor for meals+diapers in histogram", default=6)
+
     def __str__(self):
         return f"Settings for { self.user }"
 
