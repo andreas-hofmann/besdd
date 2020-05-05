@@ -13,9 +13,12 @@ from . import decorators
 
 @login_required
 @decorators.only_own_children
-def get_histogram_data(request, child_id=None, raster=10):
+def get_histogram_data(request, child_id=None):
+
+    mdfactor = request.user.usersettings.histogram_factor_md
+    raster = request.user.usersettings.histogram_raster
+
     sleep, meal, diaper = helpers.fetch_summary_from_db(request, child_id)
-    mdfactor=6
 
     sleepdata = functions.get_hist_data(sleep, raster, raster)
     mealdata = functions.get_hist_data(meal, raster*mdfactor, raster*mdfactor)
