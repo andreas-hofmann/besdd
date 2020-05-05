@@ -2,6 +2,7 @@ from django import forms
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout
+from django.contrib.auth import get_user_model
 from django.utils import timezone as tz
 
 from bootstrap_datepicker_plus import DateTimePickerInput
@@ -63,7 +64,33 @@ class SleepPhaseForm(GenericHelperForm):
 class ChildForm(GenericHelperForm):
     class Meta:
         model = models.Child
-        exclude = ['created_by', 'dt']
+        exclude = ['created_by', 'dt', 'parents']
+
+    all_parents = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if kwargs.get('instance'):
+            parents = ", ".join([p.username for p in kwargs['instance'].parents.all()])
+            self.fields['all_parents'].label = "Parents (comma separated)"
+            self.fields['all_parents'].initial = parents
+
+    def clean(self):
+        try:
+            parents = self.data['all_parents']
+            child = models.Child.objects.get(id=self.initial['id'])
+
+            new_parents = []
+
+            for p in parents.split(","):
+                new_parents.append(get_user_model().objects.get(username=p.strip()))
+
+            child.parents.set(new_parents)
+        except Exception as e:
+            raise forms.ValidationError("Invalid input in parents field.")
+
+        return super().clean()
+
 
 class MeasurementForm(GenericHelperForm):
     class Meta:
