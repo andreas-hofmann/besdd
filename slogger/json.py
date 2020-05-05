@@ -56,7 +56,10 @@ def get_summary_data_list(request, child_id=None):
     events = functions.convert_to_totals(events, "events", "event", "description")
     diary = functions.convert_to_totals(diary, "diary", "title", "content")
 
-    sleeptotals = functions.calculate_sleep_totals(sleep)
+    sleeptotals = functions.calculate_sleep_totals(sleep,
+        request.user.usersettings.start_hour_day,
+        request.user.usersettings.start_hour_night,
+    )
     mealtotals = functions.calculate_totals(meal, "meals")
     diapertotals = functions.calculate_totals(diaper, "diapers")
 
@@ -74,7 +77,10 @@ def get_summary_data_graph(request, child_id=None):
 
     sleep, meal, diaper = helpers.fetch_summary_from_db(request, child_id)
 
-    sleeptotals = functions.calculate_sleep_totals(sleep)
+    sleeptotals = functions.calculate_sleep_totals(sleep,
+        request.user.usersettings.start_hour_day,
+        request.user.usersettings.start_hour_night,
+    )
     mealtotals = functions.calculate_totals(meal, "meals")
     diapertotals = functions.calculate_totals(diaper, "diapers")
 
