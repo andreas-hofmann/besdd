@@ -8,29 +8,48 @@ Children
 
 {% block content %}
 
-<div class="mt-3 pb-4">
+<div class="container">
+  <div class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-lg">
+      <table class="table table-bordered table-hover table-sm">
+        <thead class="thead-dark">
+          <tr class="d-flex">
+            <th class="col-3">Name</th>
+            <th class="col-3">Birthday</th>
+            <th class="col-3">Parents</th>
+            <th class="col-1">Sex</th>
+            <th class="col">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for o in object_list %}
+          <tr class="d-flex">
+            <th class="col-3" scope="row"> {{ o.name }}</th>
+            <td class="col-3">{{ o.birthday }}</td>
+            <td class="col-3">
+                {% for p in o.parents.all %} {{ p.username }} {% endfor %}
+            </td>
+            <td class="col-1">{{ o.gender }}</td>
+            <td class="col">
+              {% if request.user == o.created_by %}
+              <a class='btn btn-secondary btn-sm' href='{% url 'child_edit' o.id %}'>
+                <i class="material-icons">edit</i>
+              </a>
+              {% endif %}
+           </td>
+          <tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-2"></div>
+  </div>
+</div>
+
+<div class="mt-1">
   <a class='btn btn-primary btn-sm' href='{% url 'child_add' %}'> <i class="material-icons">add</i> </a>
 </div>
-
-{% for o in object_list %}
-
-<h4>{{ o.name }}</h4>
-
-Born on {{ o.birthday }}<br>
-
-Parents:
-{% for p in o.parents.all %}
-{{ p.username }}
-{% endfor %}
-<br>
-Created on {{ o.dt|dt_localdate }} by {{ o.created_by.username }}.
-
-{% if request.user == o.created_by %}
-<div class="mt-3">
-  <a class='btn btn-secondary btn-sm' href='{% url 'child_edit' o.id %}'> <i class="material-icons">edit</i> </a>
-</div>
-{% endif %}
-
-{% endfor %}
 
 {% endblock %}
