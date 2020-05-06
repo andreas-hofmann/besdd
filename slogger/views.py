@@ -293,7 +293,6 @@ class FoodListView(LoginRequiredMixin,
                    mixins.AddChildContextViewMixin,
                    ListView):
     model = models.Food
-    template_name ="generic_list.html"
     pk_url_kwarg = "child_id"
 
     def setup(self, request, *args, **kwargs):
@@ -407,7 +406,6 @@ class DiaperContentListView(LoginRequiredMixin,
                             mixins.AddChildContextViewMixin,
                             ListView):
     model = models.DiaperContent
-    template_name ="generic_list.html"
     pk_url_kwarg = "child_id"
 
     def setup(self, request, *args, **kwargs):
