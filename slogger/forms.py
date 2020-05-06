@@ -71,11 +71,11 @@ class ChildForm(GenericHelperForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['all_parents'].label = "Parents (comma separated)"
+        self.fields['all_parents'].required = False
         if kwargs.get('instance'):
             parents = ", ".join([p.username for p in kwargs['instance'].parents.all()])
-            self.fields['all_parents'].label = "Parents (comma separated)"
             self.fields['all_parents'].initial = parents
-            self.fields['all_parents'].required = False
 
     def clean(self):
         try:
