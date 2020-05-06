@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Q
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout
@@ -119,8 +120,7 @@ class MealForm(GenericHelperForm):
             child = kwargs['instance'].child
 
         self.fields['food'].queryset = models.Food.objects.filter(
-            created_by__in=child.parents.all()
-        )
+                Q(created_by__in=child.parents.all()) | Q(is_default=True))
 
 class DiaperContentForm(GenericHelperForm):
     class Meta:
@@ -143,8 +143,7 @@ class DiaperForm(GenericHelperForm):
             child = kwargs['instance'].child
 
         self.fields['content'].queryset = models.DiaperContent.objects.filter(
-            created_by__in=child.parents.all()
-        )
+                Q(created_by__in=child.parents.all()) | Q(is_default=True))
 
 class EventForm(GenericHelperForm):
     class Meta:
