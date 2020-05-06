@@ -76,6 +76,8 @@ class ChildForm(GenericHelperForm):
         if kwargs.get('instance'):
             parents = ", ".join([p.username for p in kwargs['instance'].parents.all()])
             self.fields['all_parents'].initial = parents
+        else:
+            self.fields.pop("all_parents")
 
     def clean(self):
         try:
