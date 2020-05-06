@@ -31,6 +31,7 @@ class AddChildContextViewMixin:
 
         return context
 
+
 class CheckObjectChildRelationMixin(AddChildContextViewMixin):
 
     def get_context_data(self, **kwargs):
@@ -45,6 +46,27 @@ class CheckObjectChildRelationMixin(AddChildContextViewMixin):
             raise PermissionDenied("Invalid child requested")
 
         return context
+
+    def form_valid(self, form):
+        if self.object.created_by != self.request.user:
+            raise PermissionDenied("Invalid child requested")
+        return super().form_valid(form)
+
+
+class CheckCreatedByMixin:
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.object.created_by != self.request.user:
+            raise PermissionDenied("Invalid object requested")
+
+        return context
+
+    def form_valid(self, form):
+        if self.object.created_by != self.request.user:
+            raise PermissionDenied("Invalid object requested")
+        return super().form_valid(form)
 
 
 class SetChildIdFormMixin:
