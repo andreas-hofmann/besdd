@@ -74,16 +74,17 @@ class ChildForm(GenericHelperForm):
             parents = ", ".join([p.username for p in kwargs['instance'].parents.all()])
             self.fields['all_parents'].label = "Parents (comma separated)"
             self.fields['all_parents'].initial = parents
+            self.fields['all_parents'].required = False
 
     def clean(self):
         try:
             parents = self.data['all_parents']
             child = models.Child.objects.get(id=self.initial['id'])
 
-            new_parents = []
+            new_parents = { child.created_by }
 
-            for p in parents.split(","):
-                new_parents.append(get_user_model().objects.get(username=p.strip()))
+            for parent in [ p.strip() for p in parents.split(",") if len(p.strip()) ]:
+                new_parents.add(get_user_model().objects.get(username=parent))
 
             child.parents.set(new_parents)
         except Exception as e:
