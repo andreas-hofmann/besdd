@@ -169,6 +169,12 @@ class ChildCreateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('children')
 
+    def form_valid(self, form):
+        ret = super().form_valid(form)
+        new_child = form.save()
+        new_child.parents.set({self.request.user})
+        return ret
+
 class ChildUpdateView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
                       UpdateView):
