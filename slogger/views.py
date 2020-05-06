@@ -320,7 +320,7 @@ class FoodCreateView(LoginRequiredMixin,
         return reverse_lazy('foods')
 
 class FoodUpdateView(LoginRequiredMixin,
-                     mixins.AddChildContextViewMixin,
+                     mixins.CheckCreatedByMixin,
                      UpdateView):
     model = models.Food
     template_name ="generic_form.html"
@@ -434,7 +434,7 @@ class DiaperContentCreateView(LoginRequiredMixin,
         return reverse_lazy('diapercontents')
 
 class DiaperContentUpdateView(LoginRequiredMixin,
-                              mixins.AddChildContextViewMixin,
+                              mixins.CheckCreatedByMixin,
                               UpdateView):
     model = models.DiaperContent
     template_name ="generic_form.html"
