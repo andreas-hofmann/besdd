@@ -1,14 +1,35 @@
 {% extends 'base.html' %}
 
+{% load filters %}
+
 {% block headline %}
-All children:
+Children
 {% endblock %}
 
 {% block content %}
 
+<div class="mt-3 pb-4">
+  <a class='btn btn-primary btn-sm' href='{% url 'child_add' %}'> <i class="material-icons">add</i> </a>
+</div>
+
 {% for o in object_list %}
 
-{{ o.name }}<br>
+<h4>{{ o.name }}</h4>
+
+Born on {{ o.birthday }}<br>
+
+Parents:
+{% for p in o.parents.all %}
+{{ p.username }}
+{% endfor %}
+<br>
+Created on {{ o.dt|dt_localdate }} by {{ o.created_by.username }}.
+
+{% if request.user == o.created_by %}
+<div class="mt-3">
+  <a class='btn btn-secondary btn-sm' href='{% url 'child_edit' o.id %}'> <i class="material-icons">edit</i> </a>
+</div>
+{% endif %}
 
 {% endfor %}
 
