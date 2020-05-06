@@ -14,21 +14,21 @@ Diary entries for {{ child.name }}
     <div class="col-lg">
       <table class="table table-bordered table-hover table-sm">
         <thead class="thead-dark">
-          <tr>
-            <th scope="col-xs-3">Date</th>
-            <th scope="col-xs-2">Title</th>
-            <th scope="col-xs-2">Text</th>
-            <th scope="col-xs">Actions</th>
+          <tr class="d-flex">
+            <th class="col-2">Date</th>
+            <th class="col-2">Title</th>
+            <th class="col-6">Text</th>
+            <th class="col">Actions</th>
           </tr>
         </thead>
       
         <tbody>
           {% for o in object_list %}
-          <tr>
-            <th class="col-xs-3" scope="row"> {{ o.dt|dt_localdate }}</th>
-            <td class="col-xs-2">{{ o.title }}</td>
-            <td class="col-xs-2">{{ o.content }}</td>
-            <td class="col-xs">
+          <tr class="d-flex">
+            <th class="col-2" scope="row"> {{ o.dt|dt_localdate }}</th>
+            <td class="col-2">{{ o.title }}</td>
+            <td class="col-6">{{ o.content }}</td>
+            <td class="col">
               <a class='btn btn-secondary btn-sm' href='{% url 'diary_edit' child.id o.id %}'>
                 <i class="material-icons">edit</i>
               </a>
