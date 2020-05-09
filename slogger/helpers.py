@@ -4,6 +4,7 @@ from django.utils import timezone as tz
 
 from . import models
 
+
 def filter_GET_daterage(request, data):
     date_from = request.GET.get("from")
     date_to = request.GET.get("to")
@@ -18,6 +19,16 @@ def filter_GET_daterage(request, data):
         data = data.filter(dt__range=[date_from, date_to])
 
     return data
+
+
+def fetch_growth_from_db(request, child_id):
+    measurements = models.Measurement.objects.filter(child=child_id).order_by("dt")
+    measurements = filter_GET_daterage(request, measurements)
+
+    events = models.Event.objects.filter(child=child_id).order_by("dt")
+    events = filter_GET_daterage(request, events)
+
+    return measurements, events
 
 
 def fetch_summary_from_db(request, child_id):
