@@ -59,6 +59,12 @@ class Child(models.Model,
     def __str__(self):
         return self.name
 
+    def age_weeks(self, date=None):
+        if not date:
+            date = tz.datetime.date.today()
+        if type(date) == "str":
+            date = tz.datetime.date.fromisoformat(date)
+        return (date-self.birthday).days / 7
 
 class SleepPhase(models.Model,
                  AttributeModelMixin):
