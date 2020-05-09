@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 
+{% block head %}
+  {% load static %}
+  <script type="text/javascript" src="{% static 'js/lodash.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/plotly.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/vue.js' %}"></script>
+{% endblock %}
+
 {% block script %}
 
 <script type='text/javascript'>
