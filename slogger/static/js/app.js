@@ -5,8 +5,8 @@ function load_time_graph(element, url, get, options) {
                     { name: 'Night (h)', y: data['night_h'], text: data['night_cnt'], marker: { color:'rgb(100,000,230)' }, x: data['day'], type: 'bar', visible: options.plots.sleep,  },
                     { name: 'Day (h)',   y: data['day_h'],   text: data['day_cnt'],   marker: { color:'rgb(245,200,050)' }, x: data['day'], type: 'bar', visible: options.plots.sleep,  },
                     { name: 'Total (h)', y: data['sum_h'],   text: data['sum_cnt'],   mode: 'markers', marker: { color:'rgb(000,000,000)' }, x: data['day'], type: 'scatter', visible: options.plots.sleep, },
-                    { name: 'Diapers',   y: data['diapers']['count'],                 mode: 'markers', marker: { color:'rgb(0,200,050)' },   x: data['day'], type: 'scatter', visible: options.plots.diapers  },
-                    { name: 'Meals',     y: data['meals']['count'],                   mode: 'markers', marker: { color:'rgb(245,0,050)' },   x: data['day'], type: 'scatter', visible: options.plots.meals, },
+                    { name: 'Diapers',   y: data['diapers'],                          mode: 'markers', marker: { color:'rgb(0,200,050)' },   x: data['day'], type: 'scatter', visible: options.plots.diapers  },
+                    { name: 'Meals',     y: data['meals'],                            mode: 'markers', marker: { color:'rgb(245,0,050)' },   x: data['day'], type: 'scatter', visible: options.plots.meals, },
                 ], {
                     yaxis: {
                         showticklabels:true,

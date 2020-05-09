@@ -10,6 +10,25 @@ from . import mixins
 from . import helpers
 from . import decorators
 
+from pprint import pp
+
+@login_required
+@decorators.only_own_children
+def get_growth_data(request, child_id=None):
+    m, e = helpers.fetch_growth_from_db(request, child_id)
+    c = models.Child.objects.get(id=child_id)
+
+    response = {
+        'age_weeks':  [],
+        'weight': [],
+        'height': [],
+        'events': [],
+    }
+
+    totals = functions.merge_totals()
+
+    return JsonResponse(response)
+
 
 @login_required
 @decorators.only_own_children
@@ -126,11 +145,11 @@ def get_summary_data_graph(request, child_id=None):
         except:
             response['night_cnt'].append(0)
         try:
-            response['diapers'].append(d[1]['diapers']['count'])
+            response['diapers'].append(d[1]['diapers']['sum']['count'])
         except:
             response['diapers'].append(0)
         try:
-            response['meals'].append(d[1]['meals']['count'])
+            response['meals'].append(d[1]['meals']['sum']['count'])
         except:
             response['meals'].append(0)
 
