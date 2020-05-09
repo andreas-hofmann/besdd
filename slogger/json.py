@@ -104,35 +104,35 @@ def get_summary_data_graph(request, child_id=None):
         try:
             response['sum_h'].append(sec_to_h(d[1]['sum']['time']))
         except:
-            response['sum_h'].append(0)
+            response['sum_h'].append(None)
         try:
             response['day_h'].append(sec_to_h(d[1]['day']['time']))
         except:
-            response['day_h'].append(0)
+            response['day_h'].append(None)
         try:
             response['night_h'].append(sec_to_h(d[1]['night']['time']))
         except:
-            response['night_h'].append(0)
+            response['night_h'].append(None)
         try:
             response['sum_cnt'].append(d[1]['sum']['count'])
         except:
-            response['sum_cnt'].append(0)
+            response['sum_cnt'].append(None)
         try:
             response['day_cnt'].append(d[1]['day']['count'])
         except:
-            response['day_cnt'].append(0)
+            response['day_cnt'].append(None)
         try:
             response['night_cnt'].append(d[1]['night']['count'])
         except:
-            response['night_cnt'].append(0)
+            response['night_cnt'].append(None)
         try:
             response['diapers'].append(d[1]['diapers']['sum']['count'])
         except:
-            response['diapers'].append(0)
+            response['diapers'].append(None)
         try:
             response['meals'].append(d[1]['meals']['sum']['count'])
         except:
-            response['meals'].append(0)
+            response['meals'].append(None)
 
     return JsonResponse(response)
 
