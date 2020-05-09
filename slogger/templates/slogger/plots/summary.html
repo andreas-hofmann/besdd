@@ -77,6 +77,8 @@ var vm = new Vue({
                 }, {
                   "plots": plots,
                 });
+            } else if (this.graph_type === "Measurements") {
+                load_measurement_graph("my-graph", "{% url 'measurement_data' child.id %}");
             } else if (this.graph_type === "List") {
                 $.get("{% url 'summary_data_list' child.id %}", {"from": this.from, "to": this.to}, function (data) {
                 vm.my_data = data;
@@ -310,6 +312,7 @@ Summary for {{ child.name }}
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <a class="dropdown-item" @click="graph_type = 'List'" href="#">List</a>
         <a class="dropdown-item" @click="graph_type = 'Timeline'" href="#">Timeline</a>
+        <a class="dropdown-item" @click="graph_type = 'Measurements'" href="#">Measurements</a>
         <a class="dropdown-item" @click="graph_type = 'Histogram'" href="#">Histogram</a>
       </div>
     </div>
