@@ -1,3 +1,22 @@
+function load_measurement_graph(element, url, get, options) {
+    $.get(url, get,
+        function(data) {
+            Plotly.newPlot(element, [
+                    { name: 'Height', y: data['height'], marker: { color:'blue' }, x: data['age_weeks'], type: 'scatter', mode: 'markers' },
+                    { name: 'Weight', y: data['weight'], marker: { color:'green' }, x: data['age_weeks'], type: 'scatter', mode: 'markers' },
+                ], {
+                    yaxis: {
+                        showticklabels:true,
+                    },
+                },{
+                    displayModeBar: false,
+                    responsive: true,
+                }
+            );
+        }
+    );
+}
+
 function load_time_graph(element, url, get, options) {
     $.get(url, get,
         function(data) {
