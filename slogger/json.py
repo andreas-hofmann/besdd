@@ -13,6 +13,43 @@ from . import decorators
 
 @login_required
 @decorators.only_own_children
+def get_growth_data(request, child_id=None):
+    def get_weeks(delta):
+        return delta.days/7
+
+    measurements, events = helpers.fetch_growth_from_db(request, child_id)
+    c = models.Child.objects.get(id=child_id)
+
+    response = {
+        'age_weeks':  [],
+        'weight': [],
+        'height': [],
+        'events': [],
+    }
+
+    cur_week = 0
+    for m in measurements:
+        target_week = round(c.age_weeks(m.dt.date()))
+
+        print(cur_week, target_week)
+        while cur_week < target_week:
+            if response['age_weeks'][-1] != cur_week:
+                response['age_weeks'].append(cur_week)
+                response['weight'].append(None)
+                response['height'].append(None)
+            cur_week += 1
+
+        response['age_weeks'].append(cur_week)
+        response['weight'].append(m.weight)
+        response['height'].append(m.height)
+
+    #totals = functions.merge_totals()
+
+    return JsonResponse(response)
+
+
+@login_required
+@decorators.only_own_children
 def get_histogram_data(request, child_id=None):
 
     mdfactor = request.user.usersettings.histogram_factor_md
