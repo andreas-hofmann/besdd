@@ -10,25 +10,6 @@ from . import mixins
 from . import helpers
 from . import decorators
 
-from pprint import pp
-
-@login_required
-@decorators.only_own_children
-def get_growth_data(request, child_id=None):
-    m, e = helpers.fetch_growth_from_db(request, child_id)
-    c = models.Child.objects.get(id=child_id)
-
-    response = {
-        'age_weeks':  [],
-        'weight': [],
-        'height': [],
-        'events': [],
-    }
-
-    totals = functions.merge_totals()
-
-    return JsonResponse(response)
-
 
 @login_required
 @decorators.only_own_children
