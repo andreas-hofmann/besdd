@@ -111,8 +111,11 @@ class SleepPhaseUpdateView(LoginRequiredMixin,
 
     def get_initial(self):
         initial = super().get_initial()
-        if not initial.get('dt_end'):
-            initial['dt_end'] = tz.now()
+        try:
+            if not self.object.dt_end:
+                initial['dt_end'] = tz.now()
+        except:
+            pass
         return initial
 
     def get_context_data(self, **kwargs):
