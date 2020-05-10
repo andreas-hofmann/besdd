@@ -59,7 +59,7 @@ var vm = new Vue({
       watch: {
         from:       function (newDate, oldDate) { this.debounce_update(); },
         to:         function (newDate, oldDate) { this.debounce_update(); },
-        graph_type: function (newType, oldType) { this.debounce_update(); },
+        graph_type: function (newType, oldType) { this.update_graph(); },
       },
       created: function () {
           this.debounce_update = _.debounce(this.update_graph, 750);
