@@ -98,7 +98,7 @@ var vm = new Vue({
                   "plots": plots,
                 });
             } else if (this.graph_type === "Measurements") {
-                this.selectRange = true;
+                this.selectRange = false;
                 load_measurement_graph("my-graph", "{% url 'measurement_data' child.id %}", null,
                   { "doneHandler": function() {vm.updateDone();}, }
                 );
