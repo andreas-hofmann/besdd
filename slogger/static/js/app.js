@@ -1,6 +1,6 @@
 function load_measurement_graph(element, url, get, options) {
-    $.get(url, get,
-        function(data) {
+    $.get(url, get)
+        .done( function(data) {
             Plotly.newPlot(element, [
                     { name: 'Height', y: data['height'], marker: { color:'blue' }, x: data['age_weeks'], type: 'scatter', mode: 'markers' },
                     { name: 'Weight', y: data['weight'], marker: { color:'green' }, x: data['age_weeks'], type: 'scatter', mode: 'markers' },
@@ -13,14 +13,19 @@ function load_measurement_graph(element, url, get, options) {
                     responsive: true,
                 }
             );
+        })
+        .fail(function() {
+            element.html("Error fetching data!")
+        })
+        .always(function() {
             vm.updateDone();
         }
     );
 }
 
 function load_time_graph(element, url, get, options) {
-    $.get(url, get,
-        function(data) {
+    $.get(url, get)
+        .done( function(data) {
             Plotly.newPlot(element, [
                     { name: 'Night (h)', y: data['night_h'], text: data['night_cnt'], marker: { color:'rgb(100,000,230)' }, x: data['day'], type: 'bar', visible: options.plots.sleep,  },
                     { name: 'Day (h)',   y: data['day_h'],   text: data['day_cnt'],   marker: { color:'rgb(245,200,050)' }, x: data['day'], type: 'bar', visible: options.plots.sleep,  },
@@ -37,14 +42,19 @@ function load_time_graph(element, url, get, options) {
                     responsive: true,
                 }
             );
+        })
+        .fail(function() {
+            element.html("Error fetching data!")
+        })
+        .always(function() {
             vm.updateDone();
         }
     );
 }
 
 function load_histogram(element, url, get, options) {
-    $.get(url, get,
-        function(data) {
+    $.get(url, get)
+        .done(function(data) {
             Plotly.newPlot(element, [
                     { name: 'Sleep',   type: 'histogram', histfunc: "sum", x: data['time'], y: data['sleep'],   visible: options.plots.sleep },
                     { name: 'Meals',   type: 'histogram', histfunc: "sum", x: data['time'], y: data['meals'],   visible: options.plots.meals },
@@ -63,6 +73,11 @@ function load_histogram(element, url, get, options) {
                     responsive: true,
                 }
             );
+        })
+        .fail(function() {
+            element.html("Error fetching data!")
+        })
+        .always(function() {
             vm.updateDone();
         }
     );
