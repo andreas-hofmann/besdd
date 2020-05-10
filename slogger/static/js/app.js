@@ -15,7 +15,7 @@ function load_measurement_graph(element, url, get, options) {
             );
         })
         .fail(function() {
-            element.html("Error fetching data!")
+            alert("Error fetching data!");
         })
         .always(function() {
             vm.updateDone();
@@ -44,7 +44,7 @@ function load_time_graph(element, url, get, options) {
             );
         })
         .fail(function() {
-            element.html("Error fetching data!")
+            alert("Error fetching data!");
         })
         .always(function() {
             vm.updateDone();
@@ -75,7 +75,7 @@ function load_histogram(element, url, get, options) {
             );
         })
         .fail(function() {
-            element.html("Error fetching data!")
+            alert("Error fetching data!");
         })
         .always(function() {
             vm.updateDone();
