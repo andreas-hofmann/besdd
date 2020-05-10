@@ -1,3 +1,34 @@
+function load_percentile_graph(element, url, get, options) {
+    $.get(url, get)
+        .done( function(data) {
+            Plotly.newPlot(element, [
+                    { name: 'value', y: data['value'], marker: { color:'blue' }, x: data['day'], type: 'lines', mode: 'markers' },
+                    { name: 'p5', y: data['p5'],   x: data['day'], type: 'lines', line: { dash: 'dot', shape: 'spline', width: 1, color: 'red', }, },
+                    { name: 'p10', y: data['p10'], x: data['day'], type: 'lines', line: { dash: 'dot', shape: 'spline', width: 1, color: 'orange', }, },
+                    { name: 'p25', y: data['p25'], x: data['day'], type: 'lines', line: { dash: 'dot', shape: 'spline', width: 1, color: 'grey', }, },
+                    { name: 'p50', y: data['p50'], x: data['day'], type: 'lines', line: { dash: 'dot', shape: 'spline', width: 1, color: 'black', }, },
+                    { name: 'p75', y: data['p75'], x: data['day'], type: 'lines', line: { dash: 'dot', shape: 'spline', width: 1, color: 'grey', }, },
+                    { name: 'p90', y: data['p90'], x: data['day'], type: 'lines', line: { dash: 'dot', shape: 'spline', width: 1, color: 'orange', }, },
+                    { name: 'p95', y: data['p95'], x: data['day'], type: 'lines', line: { dash: 'dot', shape: 'spline', width: 1, color: 'red', }, },
+                ], {
+                    yaxis: {
+                        showticklabels:true,
+                    },
+                },{
+                    displayModeBar: false,
+                    responsive: true,
+                }
+            );
+        })
+        .fail(function() {
+            alert("Error fetching data!");
+        })
+        .always(function() {
+            vm.updateDone();
+        }
+    );
+}
+
 function load_measurement_graph(element, url, get, options) {
     $.get(url, get)
         .done( function(data) {
