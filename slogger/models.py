@@ -141,8 +141,8 @@ class Measurement(models.Model,
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
     created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     dt = models.DateTimeField("Date taken", default=tz.now)
-    weight = models.FloatField("Weight", null=True, blank=True)
-    height = models.FloatField("Height", null=True, blank=True)
+    weight = models.FloatField("Weight (kg)", null=True, blank=True)
+    height = models.FloatField("Height (cm)", null=True, blank=True)
 
     def __str__(self):
         return str(tz.localdate(self.dt)) + " - Weight: " + str(self.weight) \
