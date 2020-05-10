@@ -2,7 +2,7 @@ function load_percentile_graph(element, url, get, options) {
     $.get(url, get)
         .done( function(data) {
             Plotly.newPlot(element, [
-                    { name: 'value', y: data['value'], marker: { color:'blue' }, x: data['day'], type: 'lines', mode: 'markers' },
+                    { name: 'value', y: data['value'], marker: { color:'blue' }, x: data['day'], type: 'lines', mode: 'markers', marker: { size: 10, }, },
                     { name: 'p5', y: data['p5'],   x: data['day'], type: 'lines', line: { dash: 'dashdot', shape: 'spline', width: 1, color: 'red', }, },
                     { name: 'p10', y: data['p10'], x: data['day'], type: 'lines', line: { dash: 'dot',     shape: 'spline', width: 1, color: 'orange', }, },
                     { name: 'p25', y: data['p25'], x: data['day'], type: 'lines', line: { dash: 'dashdot', shape: 'spline', width: 1, color: 'grey', }, },
