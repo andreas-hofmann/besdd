@@ -224,3 +224,35 @@ class DiaryEntry(models.Model,
 
     def __str__(self):
         return str(tz.localdate(self.dt))
+
+class Percentile(models.Model):
+    GENDER_CHOICES=[
+        ("M", "Male"),
+        ("F", "Female"),
+    ]
+    MEAS_CHOICES=[
+        ("L", "Length/Height"),
+        ("W", "Weight"),
+    ]
+
+    dt = models.DateTimeField("Added on", default=tz.now)
+
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    m_type = models.CharField(max_length=1, choices=MEAS_CHOICES)
+    day = models.IntegerField()
+
+    p01 = models.FloatField()
+    p1 = models.FloatField()
+    p3 = models.FloatField()
+    p5 = models.FloatField()
+    p10 = models.FloatField()
+    p15 = models.FloatField()
+    p25 = models.FloatField()
+    p50 = models.FloatField()
+    p75 = models.FloatField()
+    p85 = models.FloatField()
+    p90 = models.FloatField()
+    p95 = models.FloatField()
+    p97 = models.FloatField()
+    p99 = models.FloatField()
+    p999 = models.FloatField()
