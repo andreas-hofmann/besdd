@@ -84,11 +84,11 @@ class SleepPhase(models.Model,
 
     def __str__(self):
         try:
-            return "%s: From %s to %s. Duration: %s." % \
-                (self.dt.date(), self.dt.time(), self.dt_end.time(), self.duration_hhmm())
+            return "%s - %s: From %s to %s. Duration: %s." % \
+                (self.child.name, self.dt.date(), self.dt.time(), self.dt_end.time(), self.duration_hhmm())
         except AttributeError:
-            return "%s: From %s." % \
-                (self.dt.date(), self.dt.time())
+            return "%s - %s: From %s." % \
+                (self.child.name, self.dt.date(), self.dt.time())
 
     def duration_sec(self):
         if self.dt_end and self.dt:
@@ -145,7 +145,8 @@ class Measurement(models.Model,
     height = models.FloatField("Height (cm)", null=True, blank=True)
 
     def __str__(self):
-        return str(tz.localdate(self.dt)) + " - Weight: " + str(self.weight) \
+        return str(self.child.name) + " - " + \
+               str(tz.localdate(self.dt)) + " - Weight: " + str(self.weight) \
                                           + ", height: " + str(self.height)
 
 
@@ -159,7 +160,7 @@ class Food(models.Model,
     description = models.TextField("Description", max_length=2000, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.name + " (" + self.created_by.username + ")"
 
 
 class Meal(models.Model,
@@ -184,7 +185,7 @@ class DiaperContent(models.Model,
     description = models.TextField("Description", max_length=2000, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.name + " (" + self.created_by.username + ")"
 
 
 class Diaper(models.Model,
@@ -196,7 +197,8 @@ class Diaper(models.Model,
     content = models.ManyToManyField(DiaperContent, blank=True)
 
     def __str__(self):
-        return str(tz.localtime(self.dt).date()) + " " + \
+        return str(self.child.name) + " - " + \
+               str(tz.localtime(self.dt).date()) + " " + \
                str(tz.localtime(self.dt).time())  + " " + \
                "+".join([str(d) for d in self.content.all()])
 
@@ -211,7 +213,8 @@ class Event(models.Model,
     description = models.TextField("Description", max_length=2000, null=True, blank=True)
 
     def __str__(self):
-        return str(tz.localdate(self.dt)) + " " + self.event
+        return str(self.child.name) + " - " + \
+               str(tz.localdate(self.dt)) + " " + self.event
 
 class DiaryEntry(models.Model,
                  AttributeModelMixin):
@@ -223,7 +226,8 @@ class DiaryEntry(models.Model,
     content = models.TextField("Entry")
 
     def __str__(self):
-        return str(tz.localdate(self.dt))
+        return str(self.child.name) + " - " + \
+               str(tz.localdate(self.dt)) + " " + self.title
 
 class Percentile(models.Model):
     GENDER_CHOICES=[
