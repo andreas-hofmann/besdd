@@ -61,9 +61,9 @@ class Child(models.Model,
 
     def age_days(self, date=None):
         if not date:
-            date = tz.datetime.date.today()
-        if type(date) == "str":
-            date = tz.datetime.date.fromisoformat(date)
+            date = tz.localtime().date()
+        if type(date) == str:
+            date = tz.datetime.fromisoformat(date).date()
         return (date-self.birthday).days
 
     def age_weeks(self, date=None):
