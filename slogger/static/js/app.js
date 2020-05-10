@@ -36,8 +36,8 @@ function load_measurement_graph(element, url, get, options) {
     $.get(url, get)
         .done( function(data) {
             Plotly.newPlot(element, [
-                    { name: 'Height', y: data['height'], marker: { color:'blue' }, x: data['age_weeks'], type: 'scatter', mode: 'markers' },
-                    { name: 'Weight', y: data['weight'], marker: { color:'green' }, x: data['age_weeks'], type: 'scatter', mode: 'markers' },
+                    { name: 'Height', y: data['height'], connectgaps:true, marker: { color:'blue' },  x: data['age_weeks'], mode:'lines+markers', line: { dash: 'dot', shape: 'spline', width: 1, color: 'grey', } },
+                    { name: 'Weight', y: data['weight'], connectgaps:true, marker: { color:'green' }, x: data['age_weeks'], mode:'lines+markers', line: { dash: 'dot', shape: 'spline', width: 1, color: 'grey', } },
                 ], {
                     yaxis: {
                         showticklabels:true,
