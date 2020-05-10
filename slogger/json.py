@@ -54,7 +54,7 @@ def get_percentile_data(request, child_id=None, m_type=None):
 
     if m_type == "height":
         attr = "height"
-        type_filter = "LH"
+        type_filter = "L"
     elif m_type == "weight":
         attr = "weight"
         type_filter = "W"
