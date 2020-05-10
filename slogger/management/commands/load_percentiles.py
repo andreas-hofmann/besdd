@@ -6,7 +6,7 @@ from slogger.models import Percentile
 
 def import_percentiles(type, gender, dt, data):
     if type == "lhfa":
-        t = "LH"
+        t = "L"
     elif type == "wfa":
         t = "W"
     else:
