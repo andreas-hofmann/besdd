@@ -4,7 +4,7 @@ from urllib import request
 
 from slogger.models import Percentile
 
-def import_percentiles(type, gender, data):
+def import_percentiles(type, gender, dt, data):
     if type == "lhfa":
         t = "LH"
     elif type == "wfa":
@@ -16,8 +16,6 @@ def import_percentiles(type, gender, data):
         g = "F"
     elif gender == "boys":
         g = "M"
-
-    dt = tz.now()
 
     for row in data.split("\r\n")[1:]:
         r = row.split("\t")
@@ -58,8 +56,9 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        dt = tz.now()
         for url in Command.URLS:
             fname = url.split("/")[-1].split("_")
             with request.urlopen(url) as response:
                 data = response.read()
-                import_percentiles(fname[0], fname[1], data.decode('ascii'))
+                import_percentiles(fname[0], fname[1], dt, data.decode('ascii'))
