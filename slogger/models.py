@@ -160,7 +160,7 @@ class Food(models.Model,
     description = models.TextField("Description", max_length=2000, null=True, blank=True)
 
     def __str__(self):
-        return self.name + " (" + self.created_by.username + ")"
+        return self.name
 
 
 class Meal(models.Model,
@@ -185,7 +185,7 @@ class DiaperContent(models.Model,
     description = models.TextField("Description", max_length=2000, null=True, blank=True)
 
     def __str__(self):
-        return self.name + " (" + self.created_by.username + ")"
+        return self.name
 
 
 class Diaper(models.Model,
