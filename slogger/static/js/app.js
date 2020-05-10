@@ -38,6 +38,7 @@ function load_measurement_graph(element, url, get, options) {
             Plotly.newPlot(element, [
                     { name: 'Height', y: data['height'], connectgaps:true, marker: { color:'blue' },  x: data['age_weeks'], mode:'lines+markers', line: { dash: 'dot', shape: 'spline', width: 1, color: 'grey', } },
                     { name: 'Weight', y: data['weight'], connectgaps:true, marker: { color:'green' }, x: data['age_weeks'], mode:'lines+markers', line: { dash: 'dot', shape: 'spline', width: 1, color: 'grey', } },
+                    { name: 'Events', y: data['nr_events'], x: data['age_weeks'], type:'histogram', histfunc:'sum', opacity:0.3, marker: { color:'red' }, },
                 ], {
                     yaxis: {
                         showticklabels:true,
