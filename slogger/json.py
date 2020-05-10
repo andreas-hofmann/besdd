@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone as tz
+from django.db.models import Q
 
 from . import models
 from . import functions
@@ -49,7 +50,9 @@ def get_growth_data(request, child_id=None):
 @login_required
 @decorators.only_own_children
 def get_percentile_data(request, child_id=None, m_type=None):
-    measurements, events = helpers.fetch_growth_from_db(request, child_id)
+    measurements = models.Measurement.objects.filter(child=child_id).order_by("dt")
+    measurements = helpers.filter_GET_daterage(request, measurements)
+
     c = models.Child.objects.get(id=child_id)
 
     if m_type == "height":
@@ -61,7 +64,10 @@ def get_percentile_data(request, child_id=None, m_type=None):
     else:
         raise ValueError("Wrong percentile type specified: " + str(m_type))
 
-    percentiles = models.Percentile.objects.filter(gender=c.gender).filter(m_type=type_filter).order_by('day')
+    end_day = c.age_days(measurements.last().dt.date())
+    percentiles = models.Percentile.objects.filter(
+            Q(gender=c.gender) & Q(m_type=type_filter) & Q(day__lte=end_day)
+        ).order_by('day')
 
     response = {
         'days':  [],
