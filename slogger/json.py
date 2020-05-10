@@ -166,7 +166,15 @@ def get_summary_data_list(request, child_id=None):
 
     totals = functions.merge_totals(sleeptotals, mealtotals, diapertotals, measurements, events, diary)
 
-    return JsonResponse([{'day': t[0], 'data': t[1]} for t in totals][::-1], safe=False)
+    avg = {
+        'time':   f"{functions.calculate_average(totals, 'time')/3600:.1f}",
+        'phases': f"{functions.calculate_average(totals, 'count'):.1f}",
+    }
+
+    return JsonResponse({
+        'avg': avg,
+        'data': [{'day': t[0], 'data': t[1]} for t in totals][::-1]
+    }, safe=False)
 
 
 @login_required
