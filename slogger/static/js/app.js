@@ -14,6 +14,9 @@ function load_percentile_graph(element, url, get, options) {
                     yaxis: {
                         showticklabels:true,
                     },
+                    xaxis: {
+                        title: 'Age (days)',
+                    },
                 },{
                     displayModeBar: false,
                     responsive: true,
@@ -38,6 +41,9 @@ function load_measurement_graph(element, url, get, options) {
                 ], {
                     yaxis: {
                         showticklabels:true,
+                    },
+                    xaxis: {
+                        title: 'Age (weeks)',
                     },
                 },{
                     displayModeBar: false,
