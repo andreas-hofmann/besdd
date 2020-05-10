@@ -51,7 +51,6 @@ def get_growth_data(request, child_id=None):
 @decorators.only_own_children
 def get_percentile_data(request, child_id=None, m_type=None):
     measurements = models.Measurement.objects.filter(child=child_id).order_by("dt")
-    measurements = helpers.filter_GET_daterage(request, measurements)
 
     c = models.Child.objects.get(id=child_id)
 
