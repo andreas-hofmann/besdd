@@ -5,11 +5,16 @@
   <script type="text/javascript" src="{% static 'js/lodash.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'js/plotly.js' %}"></script>
   <script type="text/javascript" src="{% static 'js/vue.js' %}"></script>
+
+  <script src="{% static 'js/vue-loading-overlay.js' %}"></script>
+  <link href="{% static 'css/vue-loading.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block script %}
 
 <script type='text/javascript'>
+
+Vue.component('loading', VueLoading);
 
 Vue.component('summary-entry', {
   delimiters: ['[[', ']]'],
@@ -49,6 +54,7 @@ var vm = new Vue({
         from: moment().subtract({{ user.usersettings.date_range_days }}, "days").format("YYYY-MM-DD"),
         to:   moment().format("YYYY-MM-DD"),
         graph_type: "List",
+        isLoading: false,
         my_data: {},
         plots_enabled: {
           'sleep':   "{{ user.usersettings.sleep_enabled }}",
@@ -59,14 +65,18 @@ var vm = new Vue({
       watch: {
         from:       function (newDate, oldDate) { this.debounce_update(); },
         to:         function (newDate, oldDate) { this.debounce_update(); },
-        graph_type: function (newType, oldType) { this.update_graph(); },
+        graph_type: function (newType, oldType) { this.updateGraph(); },
       },
       created: function () {
-          this.debounce_update = _.debounce(this.update_graph, 750);
-          this.update_graph();
+          this.debounce_update = _.debounce(this.updateGraph, 750);
+          this.updateGraph();
       },
       methods: {
-        update_graph: function () {
+        updateDone: function() {
+          this.isLoading = false;
+        },
+        updateGraph: function () {
+            this.isLoading = true;
             plots = {
               'sleep':    this.plots_enabled.sleep == "True" ? true : "legendonly",
               'meals':    this.plots_enabled.meals == "True" ? true : "legendonly",
@@ -85,10 +95,13 @@ var vm = new Vue({
                   "plots": plots,
                 });
             } else if (this.graph_type === "Measurements") {
-                load_measurement_graph("my-graph", "{% url 'measurement_data' child.id %}");
+                load_measurement_graph("my-graph", "{% url 'measurement_data' child.id %}", null,
+                  { "doneHandler": function() {vm.updateDone();}, }
+                );
             } else if (this.graph_type === "List") {
                 $.get("{% url 'summary_data_list' child.id %}", {"from": this.from, "to": this.to}, function (data) {
                 vm.my_data = data;
+                vm.updateDone();
               });
             }
         },
@@ -331,7 +344,11 @@ Summary for {{ child.name }}
         </div>
       </div>
       <div v-else>
-        <div id="my-graph">
+        <div id="my-graph-parent">
+          <loading id="my-graph-loading" :active.sync="isLoading">
+          </loading>
+          <div id="my-graph">
+          </div>
         </div>
       </div>
     </div>
