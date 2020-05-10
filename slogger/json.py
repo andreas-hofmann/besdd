@@ -11,7 +11,6 @@ from . import mixins
 from . import helpers
 from . import decorators
 
-
 @login_required
 @decorators.only_own_children
 def get_growth_data(request, child_id=None):
@@ -21,29 +20,52 @@ def get_growth_data(request, child_id=None):
     measurements, events = helpers.fetch_growth_from_db(request, child_id)
     c = models.Child.objects.get(id=child_id)
 
+    e = functions.convert_to_totals(events, "events", "event", "description")
+    m =functions.convert_to_totals(measurements, "measurements", "weight", "height")
+
+    totals = functions.merge_totals(e, m)
+
     response = {
         'age_weeks':  [],
         'weight': [],
         'height': [],
         'events': [],
+        'nr_events': [],
+        'descriptions': [],
     }
 
     cur_week = 0
-    for m in measurements:
-        target_week = round(c.age_weeks(m.dt.date()))
+    for t in totals:
+        target_week = round(c.age_weeks(t[0]))
 
         while cur_week < target_week:
             if response['age_weeks'][-1] != cur_week:
                 response['age_weeks'].append(cur_week)
                 response['weight'].append(None)
                 response['height'].append(None)
+                response['nr_events'].append(0)
+                response['events'].append(None)
+                response['descriptions'].append(None)
+
             cur_week += 1
 
-        response['age_weeks'].append(cur_week)
-        response['weight'].append(m.weight)
-        response['height'].append(m.height)
+        if t[1].get('measurements'):
+            for m in t[1]['measurements']:
+                response['age_weeks'].append(cur_week)
+                response['weight'].append(m['weight'])
+                response['height'].append(m['height'])
+                response['nr_events'].append(0)
+                response['events'].append(None)
+                response['descriptions'].append(None)
 
-    #totals = functions.merge_totals()
+        if t[1].get('events'):
+            for e in t[1]['events']:
+                response['age_weeks'].append(cur_week)
+                response['weight'].append(None)
+                response['height'].append(None)
+                response['nr_events'].append(1)
+                response['events'].append(e['event'])
+                response['descriptions'].append(e['description'])
 
     return JsonResponse(response)
 
