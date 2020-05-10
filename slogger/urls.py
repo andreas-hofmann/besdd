@@ -55,6 +55,7 @@ urlpatterns = [
     path('<int:child_id>/data/summary/list/',       json.get_summary_data_list,             name="summary_data_list"),
     path('<int:child_id>/data/histogram/',          json.get_histogram_data,                name="histogram_data"),
     path('<int:child_id>/data/measurements/',       json.get_growth_data,                   name="measurement_data"),
+    path('<int:child_id>/data/percentiles/<str:m_type>/', json.get_percentile_data,         name="percentile_data"),
 
 
     path('<int:child_id>/',                         views.ChildView.as_view(),              name="child"),

@@ -46,6 +46,66 @@ def get_growth_data(request, child_id=None):
 
     return JsonResponse(response)
 
+@login_required
+@decorators.only_own_children
+def get_percentile_data(request, child_id=None, m_type=None):
+    measurements, events = helpers.fetch_growth_from_db(request, child_id)
+    c = models.Child.objects.get(id=child_id)
+
+    if m_type == "height":
+        attr = "height"
+        type_filter = "LH"
+    elif m_type == "weight":
+        attr = "weight"
+        type_filter = "W"
+    else:
+        raise ValueError("Wrong percentile type specified: " + str(m_type))
+
+    percentiles = models.Percentile.objects.filter(gender=c.gender).filter(m_type=type_filter).order_by('day')
+
+    response = {
+        'days':  [],
+        'value': [],
+        'p5': [],
+        'p10': [],
+        'p25': [],
+        'p50': [],
+        'p75': [],
+        'p90': [],
+        'p95': [],
+    }
+
+    cur_day = 0
+    for m in measurements:
+        target_day = round(c.age_days(m.dt.date()))
+
+        while cur_day < target_day:
+            if response['days'][-1] != cur_day:
+                response['days'].append(cur_day)
+                response['value'].append(None)
+                response['p5'].append(percentiles[cur_day].p5)
+                response['p10'].append(percentiles[cur_day].p10)
+                response['p25'].append(percentiles[cur_day].p25)
+                response['p50'].append(percentiles[cur_day].p50)
+                response['p75'].append(percentiles[cur_day].p75)
+                response['p90'].append(percentiles[cur_day].p90)
+                response['p95'].append(percentiles[cur_day].p95)
+            cur_day += 1
+
+        response['days'].append(cur_day)
+        response['value'].append(getattr(m, attr))
+        response['p5'].append(percentiles[cur_day].p5)
+        response['p10'].append(percentiles[cur_day].p10)
+        response['p25'].append(percentiles[cur_day].p25)
+        response['p50'].append(percentiles[cur_day].p50)
+        response['p75'].append(percentiles[cur_day].p75)
+        response['p90'].append(percentiles[cur_day].p90)
+        response['p95'].append(percentiles[cur_day].p95)
+
+    #totals = functions.merge_totals()
+
+    return JsonResponse(response)
+
 
 @login_required
 @decorators.only_own_children
