@@ -31,7 +31,6 @@ def get_growth_data(request, child_id=None):
     for m in measurements:
         target_week = round(c.age_weeks(m.dt.date()))
 
-        print(cur_week, target_week)
         while cur_week < target_week:
             if response['age_weeks'][-1] != cur_week:
                 response['age_weeks'].append(cur_week)
