@@ -48,8 +48,8 @@ class CheckObjectChildRelationMixin(AddChildContextViewMixin):
         return context
 
     def form_valid(self, form):
-        if self.object.created_by != self.request.user:
-            raise PermissionDenied("Invalid child requested")
+        # Call get_context_data() just to get the permission checks implemented there.
+        self.get_context_data()
         return super().form_valid(form)
 
 
