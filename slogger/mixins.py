@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
+from django.http import JsonResponse
 
 from . import models
 
@@ -130,3 +131,29 @@ class AttributeModelMixin:
     def get_attribute_contents(self):
         return [ getattr(self, field.name) for field in self._meta.fields
                 if field.name not in self.SKIP_FIELDS ]
+
+
+class AjaxableResponseMixin:
+    """
+    Mixin to add AJAX support to a form.
+    Must be used with an object-based FormView (e.g. CreateView)
+    """
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        if self.request.is_ajax():
+            return JsonResponse(form.errors, status=400)
+        else:
+            return response
+
+    def form_valid(self, form):
+        # We make sure to call the parent's form_valid() method because
+        # it might do some processing (in the case of CreateView, it will
+        # call form.save() for example).
+        response = super().form_valid(form)
+        if self.request.is_ajax():
+            data = {
+                'id': self.object.pk,
+            }
+            return JsonResponse(data)
+        else:
+            return response
