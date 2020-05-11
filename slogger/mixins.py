@@ -5,6 +5,10 @@ from . import models
 
 
 class AddChildContextViewMixin:
+    """
+    Mixin to add the currently selected child to the view context. Raises an
+    error if the selected child does not have the current user as parent.
+    """
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -33,6 +37,9 @@ class AddChildContextViewMixin:
 
 
 class CheckObjectChildRelationMixin(AddChildContextViewMixin):
+    """
+    Mixin to check whether the edited object was created by the current user.
+    """
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -54,6 +61,10 @@ class CheckObjectChildRelationMixin(AddChildContextViewMixin):
 
 
 class CheckCreatedByMixin:
+    """
+    Mixin to check whether the edited object does belong to the currently
+    selected child.
+    """
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -70,6 +81,10 @@ class CheckCreatedByMixin:
 
 
 class SetChildIdFormMixin:
+    """
+    Mixin to add the currently selected child to the child field of the
+    created model.
+    """
 
     def form_valid(self, form):
         form.instance.child = get_object_or_404(models.Child, id=self.kwargs.get('child_id'))
@@ -82,6 +97,10 @@ class SetChildIdFormMixin:
 
 
 class CreatedByFormMixin:
+    """
+    Mixin to add the current user to the created_by field of the created
+    model.
+    """
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -94,6 +113,9 @@ class CreatedByFormMixin:
 
 
 class AttributeModelMixin:
+    """
+    Mixin to remove certain fields from a model when presenting the form.
+    """
 
     SKIP_FIELDS=(
         "id",
