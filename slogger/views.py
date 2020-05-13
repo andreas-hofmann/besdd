@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone as tz
 
 from . import models
@@ -24,6 +24,7 @@ from . import decorators
 # Free for all views
 
 class IndexView(mixins.AddChildContextViewMixin,
+                mixins.AjaxableResponseMixin,
                 TemplateView):
     template_name = "slogger/index.html"
 
@@ -40,6 +41,31 @@ class IndexView(mixins.AddChildContextViewMixin,
             else:
                 return redirect('child_add')
         return super().render_to_response(context, **response_kwargs)
+
+    def get_json(self, request, *args, **kwargs):
+        ctx = super().get_context_data(*args, **kwargs)
+
+        if ctx.get('children'):
+            my_children = ctx.get('children').all()
+        else:
+            my_children = []
+
+        default_child = None
+        if request.user.is_authenticated and request.user.usersettings.default_child:
+            c = request.user.usersettings.default_child
+            default_child = { "id": c.id, "name": c.name }
+
+        return JsonResponse(
+        {
+            'user': request.user.username if request.user.is_authenticated else None,
+            'default_child': default_child,
+            'children': [
+                {
+                    'id': c.id,
+                    'name': c.name,
+                } for c in my_children
+            ],
+        })
 
 # Views requiring login
 
@@ -145,6 +171,7 @@ class SleepPhaseDeleteView(LoginRequiredMixin,
 
 
 class ChildView(LoginRequiredMixin,
+                mixins.AjaxableResponseMixin,
                 mixins.AddChildContextViewMixin,
                 DetailView):
     model = models.Child
@@ -154,6 +181,20 @@ class ChildView(LoginRequiredMixin,
         context = super().get_context_data(**kwargs)
         context["parents"] = [ p for p in get_user_model().objects.all() if p in self.object.parents.all() ]
         return context
+
+    def get_json(self, request, *args, **kwargs):
+        c = self.get_object()
+        return JsonResponse(
+        {
+            'child': {
+                'id': c.id,
+                'name': c.name,
+                'birthday': c.birthday,
+                'parents': [
+                    { 'id': p.id, 'name': p.username, } for p in c.parents.all()
+                ],
+            },
+        })
 
 class ChildCreateView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
