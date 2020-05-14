@@ -3,6 +3,8 @@ from django.urls import path
 from . import views
 from . import json
 
+from django.views.generic import TemplateView
+
 urlpatterns = [
     path('children/',                               views.ChildListView.as_view(),          name="children"),
     path('children/add/',                           views.ChildCreateView.as_view(),        name="child_add"),
@@ -60,5 +62,6 @@ urlpatterns = [
 
     path('<int:child_id>/',                         views.ChildView.as_view(),              name="child"),
 
-    path('',                                        views.IndexView.as_view(),              name="index"),
+    path('index/',                                  views.IndexView.as_view(),              name="index"),
+    path("",                                        TemplateView.as_view(template_name="app.html"), name="app"),
 ]
