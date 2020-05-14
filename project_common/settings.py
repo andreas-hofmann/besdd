@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'bootstrap_datepicker_plus',
     'crispy_forms',
+    'webpack_loader',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -62,6 +63,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': DEBUG,
+        'BUNDLE_DIR_NAME': 'bundles/',  # must end with slash
+        'STATS_FILE': os.path.join(FRONTEND_DIR, 'webpack-stats.json'),
+    }
+}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
