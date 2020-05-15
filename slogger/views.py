@@ -91,6 +91,7 @@ class SummaryPlotView(LoginRequiredMixin,
 
 class SleepPhaseListView(LoginRequiredMixin,
                          mixins.AddChildContextViewMixin,
+                         mixins.AjaxableResponseMixin,
                          ListView):
     model = models.SleepPhase
 
@@ -100,6 +101,20 @@ class SleepPhaseListView(LoginRequiredMixin,
 
     def get_queryset(self, **kwargs):
         return models.SleepPhase.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.SleepPhase.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'from': tz.localtime(d.dt),
+                'to': tz.localtime(d.dt_end),
+                'duration': d.duration_sec(),
+            } for d in data.all() ],
+        safe=False)
 
 class SleepPhaseCreateView(LoginRequiredMixin,
                            SuccessMessageMixin,
