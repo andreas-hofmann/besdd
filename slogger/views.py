@@ -186,8 +186,8 @@ class SleepPhaseDeleteView(LoginRequiredMixin,
 
 
 class ChildView(LoginRequiredMixin,
-                mixins.AjaxableResponseMixin,
                 mixins.AddChildContextViewMixin,
+                mixins.AjaxableResponseMixin,
                 DetailView):
     model = models.Child
     pk_url_kwarg = "child_id"
@@ -292,6 +292,7 @@ class SummaryListView(LoginRequiredMixin,
 
 class MeasurementListView(LoginRequiredMixin,
                           mixins.AddChildContextViewMixin,
+                          mixins.AjaxableResponseMixin,
                           ListView):
     model = models.Measurement
     pk_url_kwarg = "child_id"
@@ -302,6 +303,20 @@ class MeasurementListView(LoginRequiredMixin,
 
     def get_queryset(self, **kwargs):
         return models.Measurement.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.Measurement.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'time': tz.localtime(d.dt),
+                'height': d.height,
+                'weight': d.weight,
+            } for d in data.all() ],
+        safe=False)
 
 class MeasurementCreateView(LoginRequiredMixin,
                             mixins.AddChildContextViewMixin,
@@ -403,6 +418,7 @@ class FoodUpdateView(LoginRequiredMixin,
 
 class MealListView(LoginRequiredMixin,
                    mixins.AddChildContextViewMixin,
+                   mixins.AjaxableResponseMixin,
                    ListView):
     model = models.Meal
     pk_url_kwarg = "child_id"
@@ -413,6 +429,19 @@ class MealListView(LoginRequiredMixin,
 
     def get_queryset(self, **kwargs):
         return models.Meal.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.Meal.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'time': tz.localtime(d.dt),
+                'food': [ f.name for f in d.food.all() ],
+            } for d in data.all() ],
+        safe=False)
 
 class MealCreateView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
@@ -517,6 +546,7 @@ class DiaperContentUpdateView(LoginRequiredMixin,
 
 class DiaperListView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
+                     mixins.AjaxableResponseMixin,
                      ListView):
     model = models.Diaper
     pk_url_kwarg = "child_id"
@@ -527,6 +557,19 @@ class DiaperListView(LoginRequiredMixin,
 
     def get_queryset(self, **kwargs):
         return models.Diaper.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.Diaper.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'time': tz.localtime(d.dt),
+                'contents': [ c.name for c in d.content.all() ],
+            } for d in data.all() ],
+        safe=False)
 
 class DiaperCreateView(LoginRequiredMixin,
                        mixins.AddChildContextViewMixin,
@@ -583,6 +626,7 @@ class DiaperDeleteView(LoginRequiredMixin,
 
 class EventListView(LoginRequiredMixin,
                     mixins.AddChildContextViewMixin,
+                    mixins.AjaxableResponseMixin,
                     ListView):
     model = models.Event
     pk_url_kwarg = "child_id"
@@ -593,6 +637,20 @@ class EventListView(LoginRequiredMixin,
 
     def get_queryset(self, **kwargs):
         return models.Event.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.Event.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'time': tz.localtime(d.dt),
+                'event': d.event,
+                'description': d.description,
+            } for d in data.all() ],
+        safe=False)
 
 class EventCreateView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
@@ -648,6 +706,7 @@ class EventDeleteView(LoginRequiredMixin,
 
 class DiaryEntryListView(LoginRequiredMixin,
                          mixins.AddChildContextViewMixin,
+                         mixins.AjaxableResponseMixin,
                          ListView):
     model = models.DiaryEntry
     pk_url_kwarg = "child_id"
@@ -658,6 +717,20 @@ class DiaryEntryListView(LoginRequiredMixin,
 
     def get_queryset(self, **kwargs):
         return models.DiaryEntry.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.DiaryEntry.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'time': tz.localtime(d.dt),
+                'title': d.event,
+                'content': d.content,
+            } for d in data.all() ],
+        safe=False)
 
 class DiaryEntryCreateView(LoginRequiredMixin,
                            mixins.AddChildContextViewMixin,
