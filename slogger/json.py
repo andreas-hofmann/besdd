@@ -39,7 +39,7 @@ def get_growth_data(request, child_id=None):
         target_week = round(c.age_weeks(t[0]))
 
         while cur_week < target_week:
-            if response['age_weeks'][-1] != cur_week:
+            if len(response['age_weeks']) == 0 or response['age_weeks'][-1] != cur_week:
                 response['age_weeks'].append(cur_week)
                 response['weight'].append(None)
                 response['height'].append(None)
