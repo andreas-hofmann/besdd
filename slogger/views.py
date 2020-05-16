@@ -85,6 +85,7 @@ def quick_add_sleepphase(request, child_id=None):
 
 class SummaryPlotView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
+                      mixins.AjaxableResponseMixin,
                       TemplateView):
     template_name = "slogger/plots/summary.html"
 
@@ -122,6 +123,7 @@ class SleepPhaseCreateView(LoginRequiredMixin,
                            mixins.AddChildContextViewMixin,
                            mixins.SetChildIdFormMixin,
                            mixins.CreatedByFormMixin,
+                           mixins.AjaxableResponseMixin,
                            CreateView):
     model = models.SleepPhase
     template_name = "generic_form.html"
@@ -145,6 +147,7 @@ class SleepPhaseCreateView(LoginRequiredMixin,
 class SleepPhaseUpdateView(LoginRequiredMixin,
                            SuccessMessageMixin,
                            mixins.AddChildContextViewMixin,
+                           mixins.AjaxableResponseMixin,
                            UpdateView):
     model = models.SleepPhase
     template_name = "generic_form.html"
@@ -171,6 +174,7 @@ class SleepPhaseUpdateView(LoginRequiredMixin,
 class SleepPhaseDeleteView(LoginRequiredMixin,
                            SuccessMessageMixin,
                            mixins.AddChildContextViewMixin,
+                           mixins.AjaxableResponseMixin,
                            DeleteView):
     model = models.SleepPhase
     template_name = "generic_delete.html"
@@ -215,6 +219,7 @@ class ChildView(LoginRequiredMixin,
 class ChildCreateView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
                       mixins.CreatedByFormMixin,
+                      mixins.AjaxableResponseMixin,
                       CreateView):
     model = models.Child
     template_name ="generic_form.html"
@@ -237,6 +242,7 @@ class ChildCreateView(LoginRequiredMixin,
 
 class ChildUpdateView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
+                      mixins.AjaxableResponseMixin,
                       UpdateView):
     model = models.Child
     pk_url_kwarg = "child_id"
@@ -258,6 +264,7 @@ class ChildUpdateView(LoginRequiredMixin,
 
 class ChildListView(LoginRequiredMixin,
                     mixins.AddChildContextViewMixin,
+                    mixins.AjaxableResponseMixin,
                     ListView):
     def get_queryset(self):
         return models.Child.objects.filter(parents__id=self.request.user.id)
@@ -265,6 +272,7 @@ class ChildListView(LoginRequiredMixin,
 
 class SummaryListView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
+                      mixins.AjaxableResponseMixin,
                       ListView):
     template_name = "slogger/summary.html"
 
@@ -323,6 +331,7 @@ class MeasurementCreateView(LoginRequiredMixin,
                             mixins.AddChildContextViewMixin,
                             mixins.SetChildIdFormMixin,
                             mixins.CreatedByFormMixin,
+                            mixins.AjaxableResponseMixin,
                             CreateView):
     model = models.Measurement
     template_name ="generic_form.html"
@@ -340,6 +349,7 @@ class MeasurementCreateView(LoginRequiredMixin,
 
 class MeasurementUpdateView(LoginRequiredMixin,
                             mixins.CheckObjectChildRelationMixin,
+                            mixins.AjaxableResponseMixin,
                             UpdateView):
     model = models.Measurement
     template_name ="generic_form.html"
@@ -356,6 +366,7 @@ class MeasurementUpdateView(LoginRequiredMixin,
 
 class MeasurementDeleteView(LoginRequiredMixin,
                             mixins.CheckObjectChildRelationMixin,
+                            mixins.AjaxableResponseMixin,
                             DeleteView):
     model = models.Measurement
     template_name ="generic_delete.html"
@@ -372,6 +383,7 @@ class MeasurementDeleteView(LoginRequiredMixin,
 
 class FoodListView(LoginRequiredMixin,
                    mixins.AddChildContextViewMixin,
+                   mixins.AjaxableResponseMixin,
                    ListView):
     model = models.Food
     pk_url_kwarg = "child_id"
@@ -386,6 +398,7 @@ class FoodListView(LoginRequiredMixin,
 class FoodCreateView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
                      mixins.CreatedByFormMixin,
+                     mixins.AjaxableResponseMixin,
                      CreateView):
     model = models.Food
     template_name ="generic_form.html"
@@ -402,6 +415,7 @@ class FoodCreateView(LoginRequiredMixin,
 
 class FoodUpdateView(LoginRequiredMixin,
                      mixins.CheckCreatedByMixin,
+                     mixins.AjaxableResponseMixin,
                      UpdateView):
     model = models.Food
     template_name ="generic_form.html"
@@ -448,6 +462,7 @@ class MealCreateView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
                      mixins.SetChildIdFormMixin,
                      mixins.CreatedByFormMixin,
+                     mixins.AjaxableResponseMixin,
                      CreateView):
     model = models.Meal
     template_name ="generic_form.html"
@@ -466,6 +481,7 @@ class MealCreateView(LoginRequiredMixin,
 
 class MealUpdateView(LoginRequiredMixin,
                      mixins.CheckObjectChildRelationMixin,
+                     mixins.AjaxableResponseMixin,
                      UpdateView):
     model = models.Meal
     template_name ="generic_form.html"
@@ -482,6 +498,7 @@ class MealUpdateView(LoginRequiredMixin,
 
 class MealDeleteView(LoginRequiredMixin,
                      mixins.CheckObjectChildRelationMixin,
+                     mixins.AjaxableResponseMixin,
                      DeleteView):
     model = models.Meal
     template_name ="generic_delete.html"
@@ -499,6 +516,7 @@ class MealDeleteView(LoginRequiredMixin,
 
 class DiaperContentListView(LoginRequiredMixin,
                             mixins.AddChildContextViewMixin,
+                            mixins.AjaxableResponseMixin,
                             ListView):
     model = models.DiaperContent
     pk_url_kwarg = "child_id"
@@ -513,6 +531,7 @@ class DiaperContentListView(LoginRequiredMixin,
 class DiaperContentCreateView(LoginRequiredMixin,
                              mixins.AddChildContextViewMixin,
                              mixins.CreatedByFormMixin,
+                             mixins.AjaxableResponseMixin,
                              CreateView):
     model = models.DiaperContent
     template_name ="generic_form.html"
@@ -530,6 +549,7 @@ class DiaperContentCreateView(LoginRequiredMixin,
 
 class DiaperContentUpdateView(LoginRequiredMixin,
                               mixins.CheckCreatedByMixin,
+                              mixins.AjaxableResponseMixin,
                               UpdateView):
     model = models.DiaperContent
     template_name ="generic_form.html"
@@ -576,6 +596,7 @@ class DiaperCreateView(LoginRequiredMixin,
                        mixins.AddChildContextViewMixin,
                        mixins.SetChildIdFormMixin,
                        mixins.CreatedByFormMixin,
+                       mixins.AjaxableResponseMixin,
                        CreateView):
     model = models.Diaper
     template_name ="generic_form.html"
@@ -594,6 +615,7 @@ class DiaperCreateView(LoginRequiredMixin,
 
 class DiaperUpdateView(LoginRequiredMixin,
                        mixins.CheckObjectChildRelationMixin,
+                       mixins.AjaxableResponseMixin,
                        UpdateView):
     model = models.Diaper
     template_name ="generic_form.html"
@@ -610,6 +632,7 @@ class DiaperUpdateView(LoginRequiredMixin,
 
 class DiaperDeleteView(LoginRequiredMixin,
                        mixins.CheckObjectChildRelationMixin,
+                       mixins.AjaxableResponseMixin,
                        DeleteView):
     model = models.Diaper
     template_name ="generic_delete.html"
@@ -657,6 +680,7 @@ class EventCreateView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
                       mixins.SetChildIdFormMixin,
                       mixins.CreatedByFormMixin,
+                      mixins.AjaxableResponseMixin,
                       CreateView):
     model = models.Event
     template_name ="generic_form.html"
@@ -674,6 +698,7 @@ class EventCreateView(LoginRequiredMixin,
 
 class EventUpdateView(LoginRequiredMixin,
                       mixins.CheckObjectChildRelationMixin,
+                      mixins.AjaxableResponseMixin,
                       UpdateView):
     model = models.Event
     template_name ="generic_form.html"
@@ -690,6 +715,7 @@ class EventUpdateView(LoginRequiredMixin,
 
 class EventDeleteView(LoginRequiredMixin,
                       mixins.CheckObjectChildRelationMixin,
+                      mixins.AjaxableResponseMixin,
                       DeleteView):
     model = models.Event
     template_name ="generic_delete.html"
@@ -737,6 +763,7 @@ class DiaryEntryCreateView(LoginRequiredMixin,
                            mixins.AddChildContextViewMixin,
                            mixins.SetChildIdFormMixin,
                            mixins.CreatedByFormMixin,
+                           mixins.AjaxableResponseMixin,
                            CreateView):
     model = models.DiaryEntry
     template_name ="generic_form.html"
@@ -754,6 +781,7 @@ class DiaryEntryCreateView(LoginRequiredMixin,
 
 class DiaryEntryUpdateView(LoginRequiredMixin,
                            mixins.CheckObjectChildRelationMixin,
+                           mixins.AjaxableResponseMixin,
                            UpdateView):
     model = models.DiaryEntry
     template_name ="generic_form.html"
@@ -770,6 +798,7 @@ class DiaryEntryUpdateView(LoginRequiredMixin,
 
 class DiaryEntryDeleteView(LoginRequiredMixin,
                            mixins.CheckObjectChildRelationMixin,
+                           mixins.AjaxableResponseMixin,
                            DeleteView):
     model = models.DiaryEntry
     template_name ="generic_delete.html"
@@ -786,6 +815,7 @@ class DiaryEntryDeleteView(LoginRequiredMixin,
 
 
 class SettingsUpdateView(LoginRequiredMixin,
+                         mixins.AjaxableResponseMixin,
                          UpdateView):
     model = models.UserSettings
     template_name ="generic_form.html"
