@@ -165,4 +165,4 @@ class AjaxableResponseMixin:
             return self.get_json(request, *args, **kwargs)
 
     def get_json(self, request, *args, **kwargs):
-        return JsonResponse({'Error': 'Not implemented!'}, status=500)
+        return JsonResponse({'Error': 'Not implemented!'}, status=501)
