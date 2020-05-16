@@ -58,6 +58,7 @@ class IndexView(mixins.AddChildContextViewMixin,
         return JsonResponse(
         {
             'user': request.user.username if request.user.is_authenticated else None,
+            'id': request.user.id if request.user.is_authenticated else None,
             'default_child': default_child,
             'children': [
                 {
