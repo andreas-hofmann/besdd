@@ -171,6 +171,14 @@ class SleepPhaseUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('sleepphases', kwargs = {'child_id': self.object.child.id})
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'dt_end': o.dt_end,
+        })
+
 class SleepPhaseDeleteView(LoginRequiredMixin,
                            SuccessMessageMixin,
                            mixins.AddChildContextViewMixin,
@@ -261,6 +269,16 @@ class ChildUpdateView(LoginRequiredMixin,
 
     def get_success_url(self):
         return reverse_lazy('child', kwargs = {'child_id': self.kwargs['child_id']})
+
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'name': o.name,
+            'parents': o.parents.all(),
+            'birthday': o.birthday,
+            'gender': o.gender,
+        })
 
 class ChildListView(LoginRequiredMixin,
                     mixins.AddChildContextViewMixin,
@@ -364,6 +382,15 @@ class MeasurementUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('measurements', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'height': o.height,
+            'weight': o.weight,
+        })
+
 class MeasurementDeleteView(LoginRequiredMixin,
                             mixins.CheckObjectChildRelationMixin,
                             mixins.AjaxableResponseMixin,
@@ -394,6 +421,14 @@ class FoodListView(LoginRequiredMixin,
 
     def get_queryset(self, **kwargs):
         return models.Food.objects.filter(created_by=self.request.user.id).order_by("-dt")
+
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'name': o.name,
+            'description': o.description,
+        })
 
 class FoodCreateView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
@@ -429,6 +464,15 @@ class FoodUpdateView(LoginRequiredMixin,
 
     def get_success_url(self):
         return reverse_lazy('foods')
+
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'name': o.name,
+            'description': o.description,
+        })
 
 
 class MealListView(LoginRequiredMixin,
@@ -495,6 +539,18 @@ class MealUpdateView(LoginRequiredMixin,
 
     def get_success_url(self):
         return reverse_lazy('meals', kwargs = {'child_id': self.kwargs['child_id']})
+
+    def get_json(self, request, *args, **kwargs):
+        child = models.Child.objects.get(id=self.kwargs['child_id'])
+        foods = models.Food.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
+
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'food': o.food.all(),
+            'food_choices': [ f for f in foods.all() ],
+        })
 
 class MealDeleteView(LoginRequiredMixin,
                      mixins.CheckObjectChildRelationMixin,
@@ -564,6 +620,14 @@ class DiaperContentUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('diapercontents')
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'name': o.name,
+            'description': o.description,
+        })
+
 
 class DiaperListView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
@@ -629,6 +693,18 @@ class DiaperUpdateView(LoginRequiredMixin,
 
     def get_success_url(self):
         return reverse_lazy('diapers', kwargs = {'child_id': self.kwargs['child_id']})
+
+    def get_json(self, request, *args, **kwargs):
+        child = models.Child.objects.get(id=self.kwargs['child_id'])
+        dc = models.DiaperContent.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
+
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'content': o.content.all(),
+            'content_choices': [ f for f in dc.all() ],
+        })
 
 class DiaperDeleteView(LoginRequiredMixin,
                        mixins.CheckObjectChildRelationMixin,
@@ -713,6 +789,15 @@ class EventUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('events', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'event': o.event,
+            'description': o.description,
+        })
+
 class EventDeleteView(LoginRequiredMixin,
                       mixins.CheckObjectChildRelationMixin,
                       mixins.AjaxableResponseMixin,
@@ -796,6 +881,15 @@ class DiaryEntryUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('diary', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'title': o.title,
+            'content': o.content,
+        })
+
 class DiaryEntryDeleteView(LoginRequiredMixin,
                            mixins.CheckObjectChildRelationMixin,
                            mixins.AjaxableResponseMixin,
@@ -838,3 +932,20 @@ class SettingsUpdateView(LoginRequiredMixin,
 
     def get_success_url(self):
         return reverse_lazy('settings', kwargs= {'pk': self.request.user.usersettings.id })
+
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'paginate_by': o.paginate_by,
+            'date_range_days': o.date_range_days,
+            'content': o.content,
+            'sleep_enabled': o.sleep_enabled,
+            'meals_enabled': o.meals_enabled,
+            'diapers_enabled': o.diapers_enabled,
+            'default_child': o.default_child,
+            'start_hour_day': o.start_hour_day,
+            'start_hour_night': o.start_hour_night,
+            'histogram_raster': o.histogram_raster,
+            'histogram_factor_md': o.histogram_factor_md,
+        })
