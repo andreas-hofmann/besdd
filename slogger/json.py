@@ -90,6 +90,9 @@ def get_percentile_data(request, child_id=None, m_type=None):
             Q(gender=c.gender) & Q(m_type=type_filter) & Q(day__lte=end_day)
         ).order_by('day')
 
+    if len(percentiles) == 0:
+        return JsonResponse({'Error': 'Percentile data not available.'}, status=500)
+
     response = {
         'days':  [],
         'value': [],
