@@ -107,7 +107,7 @@ def get_percentile_data(request, child_id=None, m_type=None):
         target_day = round(c.age_days(m.dt.date()))
 
         while cur_day < target_day:
-            if response['days'][-1] != cur_day:
+            if len(response['days']) == 0 or response['days'][-1] != cur_day:
                 response['days'].append(cur_day)
                 response['value'].append(None)
                 response['p5'].append(percentiles[cur_day].p5)
