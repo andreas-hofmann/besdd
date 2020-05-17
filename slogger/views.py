@@ -113,7 +113,7 @@ class SleepPhaseListView(LoginRequiredMixin,
             [{
                 'id': d.id,
                 'from': tz.localtime(d.dt),
-                'to': tz.localtime(d.dt_end),
+                'to': tz.localtime(d.dt_end) if d.dt_end else None,
                 'duration': d.duration_sec(),
             } for d in data.all() ],
         safe=False)
