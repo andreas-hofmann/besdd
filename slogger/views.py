@@ -839,7 +839,7 @@ class DiaryEntryListView(LoginRequiredMixin,
             [{
                 'id': d.id,
                 'time': d.dt,
-                'title': d.event,
+                'title': d.title,
                 'content': d.content,
             } for d in data.all() ],
         safe=False)
