@@ -548,8 +548,8 @@ class MealUpdateView(LoginRequiredMixin,
         return JsonResponse({
             'id': o.id,
             'dt': o.dt,
-            'food': o.food.all(),
-            'food_choices': [ f for f in foods.all() ],
+            'food': [ f.name for f in o.food.all() ],
+            'food_choices': [ { 'id': f.id, 'name': f.name } for f in foods.all() ],
         })
 
 class MealDeleteView(LoginRequiredMixin,
@@ -702,8 +702,8 @@ class DiaperUpdateView(LoginRequiredMixin,
         return JsonResponse({
             'id': o.id,
             'dt': o.dt,
-            'content': o.content.all(),
-            'content_choices': [ f for f in dc.all() ],
+            'content': [ c.name for c in o.content.all() ],
+            'content_choices': [ { 'id': c.id, 'name': c.name } for c in dc.all() ],
         })
 
 class DiaperDeleteView(LoginRequiredMixin,
