@@ -338,7 +338,7 @@ class MeasurementListView(LoginRequiredMixin,
         return JsonResponse(
             [{
                 'id': d.id,
-                'time': tz.localtime(d.dt),
+                'time': d.dt,
                 'height': d.height,
                 'weight': d.weight,
             } for d in data.all() ],
@@ -496,7 +496,7 @@ class MealListView(LoginRequiredMixin,
         return JsonResponse(
             [{
                 'id': d.id,
-                'time': tz.localtime(d.dt),
+                'time': d.dt,
                 'food': [ f.name for f in d.food.all() ],
             } for d in data.all() ],
         safe=False)
@@ -650,7 +650,7 @@ class DiaperListView(LoginRequiredMixin,
         return JsonResponse(
             [{
                 'id': d.id,
-                'time': tz.localtime(d.dt),
+                'time': d.dt,
                 'contents': [ c.name for c in d.content.all() ],
             } for d in data.all() ],
         safe=False)
@@ -745,7 +745,7 @@ class EventListView(LoginRequiredMixin,
         return JsonResponse(
             [{
                 'id': d.id,
-                'time': tz.localtime(d.dt),
+                'time': d.dt,
                 'event': d.event,
                 'description': d.description,
             } for d in data.all() ],
@@ -837,7 +837,7 @@ class DiaryEntryListView(LoginRequiredMixin,
         return JsonResponse(
             [{
                 'id': d.id,
-                'time': tz.localtime(d.dt),
+                'time': d.dt,
                 'title': d.event,
                 'content': d.content,
             } for d in data.all() ],
