@@ -523,6 +523,13 @@ class MealCreateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('meals', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        child = models.Child.objects.get(id=self.kwargs['child_id'])
+        foods = models.Food.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
+        return JsonResponse({
+            'food_choices': [ { 'id': f.id, 'name': f.name } for f in foods.all() ],
+        })
+
 class MealUpdateView(LoginRequiredMixin,
                      mixins.CheckObjectChildRelationMixin,
                      mixins.AjaxableResponseMixin,
@@ -676,6 +683,13 @@ class DiaperCreateView(LoginRequiredMixin,
 
     def get_success_url(self):
         return reverse_lazy('diapers', kwargs = {'child_id': self.kwargs['child_id']})
+
+    def get_json(self, request, *args, **kwargs):
+        child = models.Child.objects.get(id=self.kwargs['child_id'])
+        dc = models.DiaperContent.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
+        return JsonResponse({
+            'content_choices': [ { 'id': c.id, 'name': c.name } for c in dc.all() ],
+        })
 
 class DiaperUpdateView(LoginRequiredMixin,
                        mixins.CheckObjectChildRelationMixin,
