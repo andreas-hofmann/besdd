@@ -610,7 +610,7 @@ class DiaperContentListView(LoginRequiredMixin,
         return JsonResponse(
             [{
                 'id': d.id,
-                'content': d.name,
+                'name': d.name,
                 'description': d.description,
             } for d in data.all() ], safe=False)
 
