@@ -185,7 +185,7 @@ def get_summary_data_list(request, child_id=None):
     h_day = request.user.usersettings.start_hour_day
     h_night = request.user.usersettings.start_hour_night
 
-    sleeptotals = functions.calculate_sleep_totals(sleep, h_day, h_night)
+    sleeptotals = functions.calculate_duration_totals(sleep, h_day, h_night)
     mealtotals = functions.calculate_totals(meal, "meals", h_day, h_night)
     diapertotals = functions.calculate_totals(diaper, "diapers", h_day, h_night)
 
@@ -214,7 +214,7 @@ def get_summary_data_graph(request, child_id=None):
     h_day = request.user.usersettings.start_hour_day
     h_night = request.user.usersettings.start_hour_night
 
-    sleeptotals = functions.calculate_sleep_totals(sleep, h_day, h_night)
+    sleeptotals = functions.calculate_duration_totals(sleep, h_day, h_night)
     mealtotals = functions.calculate_totals(meal, "meals", h_day, h_night)
     diapertotals = functions.calculate_totals(diaper, "diapers", h_day, h_night)
 

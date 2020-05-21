@@ -92,7 +92,7 @@ def calculate_totals(data, dict_key, h_day=8, h_night=19):
 
     return sorted(totals.items(), key=lambda kv: date.fromisoformat(kv[0]))
 
-def calculate_sleep_totals(data, h_day=8, h_night=19):
+def calculate_duration_totals(data, h_day=8, h_night=19):
     totals = {}
 
     carried_secs = {
