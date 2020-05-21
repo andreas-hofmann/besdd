@@ -121,12 +121,14 @@ class Food(models.Model,
 
 
 class Meal(models.Model,
+           DurationModelMixin,
            AttributeModelMixin):
 
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
     created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     dt = models.DateTimeField("Eaten on", default=tz.now)
     food = models.ManyToManyField(Food)
+    dt_end = models.DateTimeField("Eaten until", default=None, null=True, blank=True)
 
     def __str__(self):
         return str(self.child.name) + " - " + str(tz.localtime(self.dt))
