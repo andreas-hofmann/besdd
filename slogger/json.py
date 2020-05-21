@@ -185,7 +185,7 @@ def get_summary_data_list(request, child_id=None):
     h_day = request.user.usersettings.start_hour_day
     h_night = request.user.usersettings.start_hour_night
 
-    sleeptotals = functions.calculate_duration_totals(sleep, h_day, h_night)
+    sleeptotals = functions.calculate_totals(sleep, "sleep", h_day, h_night)
     mealtotals = functions.calculate_totals(meal, "meals", h_day, h_night)
     diapertotals = functions.calculate_totals(diaper, "diapers", h_day, h_night)
 
@@ -214,7 +214,7 @@ def get_summary_data_graph(request, child_id=None):
     h_day = request.user.usersettings.start_hour_day
     h_night = request.user.usersettings.start_hour_night
 
-    sleeptotals = functions.calculate_duration_totals(sleep, h_day, h_night)
+    sleeptotals = functions.calculate_totals(sleep, "sleep", h_day, h_night)
     mealtotals = functions.calculate_totals(meal, "meals", h_day, h_night)
     diapertotals = functions.calculate_totals(diaper, "diapers", h_day, h_night)
 
@@ -236,27 +236,27 @@ def get_summary_data_graph(request, child_id=None):
         response['day'].append(d[0])
 
         try:
-            response['sum_h'].append(sec_to_h(d[1]['sum']['time']))
+            response['sum_h'].append(sec_to_h(d[1]['sleep']['sum']['time']))
         except:
             response['sum_h'].append(None)
         try:
-            response['day_h'].append(sec_to_h(d[1]['day']['time']))
+            response['day_h'].append(sec_to_h(d[1]['sleep']['day']['time']))
         except:
             response['day_h'].append(None)
         try:
-            response['night_h'].append(sec_to_h(d[1]['night']['time']))
+            response['night_h'].append(sec_to_h(d[1]['sleep']['night']['time']))
         except:
             response['night_h'].append(None)
         try:
-            response['sum_cnt'].append(d[1]['sum']['count'])
+            response['sum_cnt'].append(d[1]['sleep']['sum']['count'])
         except:
             response['sum_cnt'].append(None)
         try:
-            response['day_cnt'].append(d[1]['day']['count'])
+            response['day_cnt'].append(d[1]['sleep']['day']['count'])
         except:
             response['day_cnt'].append(None)
         try:
-            response['night_cnt'].append(d[1]['night']['count'])
+            response['night_cnt'].append(d[1]['sleep']['night']['count'])
         except:
             response['night_cnt'].append(None)
         try:
