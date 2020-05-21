@@ -59,6 +59,11 @@ def calculate_average(totals, key):
 def calculate_totals(data, dict_key, h_day=8, h_night=19):
     totals = {}
 
+    carried_secs = {
+        'sum' : 0,
+        'daynight' : 0,
+    }
+
     last_d = None
     for d in data:
         my_dt = tz.localtime(d.dt)
@@ -70,22 +75,37 @@ def calculate_totals(data, dict_key, h_day=8, h_night=19):
 
         if not totals[main_key].get(dict_key):
             totals[main_key][dict_key] = {
-                'sum':   { "count": 0, "time": 0 },
-                'day':   { "count": 0, "time": 0 },
-                'night': { "count": 0, "time": 0 },
+                'sum':   { "count": 0, "time": 0, 'interval': 0 },
+                'day':   { "count": 0, "time": 0, 'interval': 0 },
+                'night': { "count": 0, "time": 0, 'interval': 0 },
             }
 
-        duration_secs = 0
+        interval_secs = 0
         totals[main_key][dict_key]['sum']['count'] += 1
-        if last_d:
-            duration_secs = (d.dt-last_d.dt).total_seconds()
-            totals[main_key][dict_key]['sum']['time'] += duration_secs
 
         key = 'night'
         if  my_dt.time() >= time(hour=h_day) and my_dt.time() <= time(hour=h_night):
             key = 'day'
 
-        totals[main_key][dict_key][key]['time'] += duration_secs
+        try:
+            d_today = d.duration_sec_day()
+            d_tomorrow = d.duration_sec_day(tomorrow=True)
+
+            totals[main_key][dict_key]['sum']['time'] += d_today
+            totals[main_key][dict_key]['sum']['time'] += carried_secs['sum']
+            totals[main_key][dict_key][key]['time'] += d_today
+            totals[main_key][dict_key][key]['time'] += carried_secs['daynight']
+
+            carried_secs['sum'] = d_tomorrow
+            carried_secs['daynight'] = d_tomorrow
+        except AttributeError:
+            pass
+
+        if last_d:
+            interval_secs = (d.dt-last_d.dt).total_seconds()
+            totals[main_key][dict_key]['sum']['interval'] += interval_secs
+
+        totals[main_key][dict_key][key]['interval'] += interval_secs
         totals[main_key][dict_key][key]['count'] += 1
 
         last_d = d
