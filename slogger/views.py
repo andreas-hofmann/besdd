@@ -436,12 +436,13 @@ class FoodListView(LoginRequiredMixin,
         return models.Food.objects.filter(created_by=self.request.user.id).order_by("-dt")
 
     def get_json(self, request, *args, **kwargs):
-        o = self.get_object()
-        return JsonResponse({
-            'id': o.id,
-            'name': o.name,
-            'description': o.description,
-        })
+        data = models.Food.objects.filter(created_by=self.request.user.id).order_by("-dt")
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'name': d.name,
+                'description': d.description,
+            } for d in data.all() ], safe=False)
 
 class FoodCreateView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
