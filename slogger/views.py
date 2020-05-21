@@ -275,7 +275,7 @@ class ChildUpdateView(LoginRequiredMixin,
         return JsonResponse({
             'id': o.id,
             'name': o.name,
-            'parents': o.parents.all(),
+            'parents': [ p.username for p in o.parents.all() ],
             'birthday': o.birthday,
             'gender': o.gender,
         })
@@ -286,6 +286,19 @@ class ChildListView(LoginRequiredMixin,
                     ListView):
     def get_queryset(self):
         return models.Child.objects.filter(parents__id=self.request.user.id)
+
+    def get_json(self, request, *args, **kwargs):
+        data = models.Child.objects.filter(parents__id=self.request.user.id).order_by("-dt")
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'name': d.name,
+                'birthday': d.birthday,
+                'gender': d.gender,
+                'parents': [ p.username for p in d.parents.all() ],
+            } for d in data.all() ],
+        safe=False)
 
 
 class SummaryListView(LoginRequiredMixin,
@@ -590,6 +603,15 @@ class DiaperContentListView(LoginRequiredMixin,
 
     def get_queryset(self, **kwargs):
         return models.DiaperContent.objects.filter(created_by=self.request.user.id).order_by("-dt")
+
+    def get_json(self, request, *args, **kwargs):
+        data = models.DiaperContent.objects.filter(created_by=self.request.user.id).order_by("-dt")
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'content': d.name,
+                'description': d.description,
+            } for d in data.all() ], safe=False)
 
 class DiaperContentCreateView(LoginRequiredMixin,
                              mixins.AddChildContextViewMixin,
