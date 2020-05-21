@@ -303,7 +303,10 @@ def get_check(request, child_id=None):
     try:
         m = models.Meal.objects.filter(child=child_id).latest('dt')
 
-        diff = (tz.now() - m.dt)
+        if not m.dt_end:
+            diff = (tz.now() - m.dt)
+        else:
+            diff = (tz.now() - m.dt_end)
         secs = diff.seconds
         days = diff.days
         response['eat']["since_h"] = f"{int(secs/3600)}"
