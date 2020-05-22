@@ -47,7 +47,7 @@ def calculate_average(totals, key):
     for d in totals:
         total_days += 1
         try:
-            total_sleep += d[1]['sum'][key]
+            total_sleep += d[1]['sleep']['sum'][key]
         except KeyError:
             pass
 
