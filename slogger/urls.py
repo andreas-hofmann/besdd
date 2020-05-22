@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 from . import json
@@ -63,5 +63,6 @@ urlpatterns = [
     path('<int:child_id>/',                         views.ChildView.as_view(),              name="child"),
 
     path('index/',                                  views.IndexView.as_view(),              name="index"),
-    path("",                                        TemplateView.as_view(template_name="app.html"), name="app"),
+
+    re_path('.*',                                        TemplateView.as_view(template_name="app.html"), name="app"),
 ]
