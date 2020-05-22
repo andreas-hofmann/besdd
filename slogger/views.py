@@ -30,7 +30,7 @@ class IndexView(mixins.AddChildContextViewMixin,
                 TemplateView):
 
     def get_template_names(self):
-        if settings.USE_VUE_FRONTEND:
+        if settings.USE_VUE_FRONTEND and self.request.user.usersettings.use_new_ui:
             if settings.DEBUG:
                 return ['app.html']
             else:
@@ -39,7 +39,8 @@ class IndexView(mixins.AddChildContextViewMixin,
         return ['slogger/index.html']
 
     def render_to_response(self, context, **response_kwargs):
-        if not settings.USE_VUE_FRONTEND and self.request.user.is_authenticated:
+        if not (settings.USE_VUE_FRONTEND and self.request.user.usersettings.use_new_ui) \
+                and self.request.user.is_authenticated:
             children = models.Child.objects.filter(parents__id=self.request.user.id)
             if self.request.user.is_authenticated:
                 s = self.request.user.usersettings
@@ -995,4 +996,5 @@ class SettingsUpdateView(LoginRequiredMixin,
             'start_hour_night': o.start_hour_night,
             'histogram_raster': o.histogram_raster,
             'histogram_factor_md': o.histogram_factor_md,
+            'use_new_ui': o.use_new_ui,
         })
