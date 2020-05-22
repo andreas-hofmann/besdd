@@ -197,21 +197,24 @@ Summary for {{ child.name }}
                 <h5>Total:</h5>
                 <p>
                   [[ secToHours(summary.sleep.sum.time) ]] hours in [[ summary.sleep.sum.count ]] phases.<br>
-                  Avg. length [[ avgTime(summary.sleep.sum) ]] hours.
+                  Avg. length [[ avgTime(summary.sleep.sum) ]] hours.<br />
+                  Avg. interval [[ avgInterval(summary.sleep.sum) ]] hours.
                 </p>
                 </div>
                 <div class="col-md">
                 <h5>Day:</h5>
                 <p>
                   [[ secToHours(summary.sleep.day.time) ]] hours in [[ summary.sleep.day.count ]] phases.<br>
-                  Avg. length [[ avgTime(summary.sleep.day) ]] hours.
+                  Avg. length [[ avgTime(summary.sleep.day) ]] hours.<br />
+                  Avg. interval [[ avgInterval(summary.sleep.day) ]] hours.
                 </p>
                 </div>
                 <div class="col-md">
                 <h5>Night:</h5>
                 <p>
                   [[ secToHours(summary.sleep.night.time) ]] hours in [[ summary.sleep.night.count ]] phases.<br>
-                  Avg. length [[ avgTime(summary.sleep.night) ]] hours.
+                  Avg. length [[ avgTime(summary.sleep.night) ]] hours.<br />
+                  Avg. interval [[ avgInterval(summary.sleep.night) ]] hours.
                 </p>
                 </div>
               </div>
@@ -367,6 +370,7 @@ Summary for {{ child.name }}
       <div v-if="graph_type == 'List'" id="my-list">
         <p v-if="my_data.avg != null" id="averages">
           Average sleep time: [[ my_data.avg.time ]] hours in [[ my_data.avg.phases ]] phases.
+          Average sleep time: [[ my_data.avg.interval ]] hours.
         </p>
         <div id="accordion">
           <summary-entry v-for="(data, idx) in my_data.data" :key="data.day" :idx="idx" :day="data.day" :summary="data.data"></summary-entry>
