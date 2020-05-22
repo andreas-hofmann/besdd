@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone as tz
 from django.db.models import Q
+from django.conf import settings
 
 from . import models
 from . import forms
@@ -27,10 +28,18 @@ from . import decorators
 class IndexView(mixins.AddChildContextViewMixin,
                 mixins.AjaxableResponseMixin,
                 TemplateView):
-    template_name = "slogger/index.html"
+
+    def get_template_names(self):
+        if settings.USE_VUE_FRONTEND:
+            if settings.DEBUG:
+                return ['app.html']
+            else:
+                return ['index.html']
+
+        return ['slogger/index.html']
 
     def render_to_response(self, context, **response_kwargs):
-        if self.request.user.is_authenticated:
+        if not settings.USE_VUE_FRONTEND and self.request.user.is_authenticated:
             children = models.Child.objects.filter(parents__id=self.request.user.id)
             if self.request.user.is_authenticated:
                 s = self.request.user.usersettings

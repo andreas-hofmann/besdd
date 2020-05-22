@@ -62,7 +62,5 @@ urlpatterns = [
 
     path('<int:child_id>/',                         views.ChildView.as_view(),              name="child"),
 
-    path('index/',                                  views.IndexView.as_view(),              name="index"),
-
-    re_path('.*',                                        TemplateView.as_view(template_name="app.html"), name="app"),
+    re_path('.*',                                  views.IndexView.as_view(),              name="index"),
 ]

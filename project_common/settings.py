@@ -31,6 +31,8 @@ except FileNotFoundError:
     print("dd if=/dev/urandom count=1 bs=56 | base64 > secret_key.txt")
     sys.exit(1)
 
+USE_VUE_FRONTEND = True
+
 DEBUG = True
 
 if DEBUG == True:
@@ -54,7 +56,6 @@ INSTALLED_APPS = [
     'bootstrap4',
     'bootstrap_datepicker_plus',
     'crispy_forms',
-    'webpack_loader',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -65,13 +66,15 @@ INSTALLED_APPS = [
 ]
 
 FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': DEBUG,
-        'BUNDLE_DIR_NAME': 'bundles/',  # must end with slash
-        'STATS_FILE': os.path.join(FRONTEND_DIR, 'webpack-stats.json'),
+if DEBUG and USE_VUE_FRONTEND:
+    INSTALLED_APPS.append('webpack_loader')
+    WEBPACK_LOADER = {
+        'DEFAULT': {
+            'CACHE': DEBUG,
+            'BUNDLE_DIR_NAME': 'bundles/',  # must end with slash
+            'STATS_FILE': os.path.join(FRONTEND_DIR, 'webpack-stats.json'),
+        }
     }
-}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -159,3 +162,9 @@ STATIC_ROOT = BASE_DIR + "/staticfiles/"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+if USE_VUE_FRONTEND and not DEBUG:
+    FRONTEND_DIST_DIR = os.path.join(FRONTEND_DIR, "dist")
+
+    STATICFILES_DIRS.append(FRONTEND_DIST_DIR)
+    TEMPLATES[0]['DIRS'].append(FRONTEND_DIST_DIR)
