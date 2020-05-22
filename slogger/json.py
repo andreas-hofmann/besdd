@@ -194,6 +194,7 @@ def get_summary_data_list(request, child_id=None):
     avg = {
         'time':   f"{functions.calculate_average(totals, 'time')/3600:.1f}",
         'phases': f"{functions.calculate_average(totals, 'count'):.1f}",
+        'interval': f"{functions.calculate_average(totals, 'interval')/3600:.1f}",
     }
 
     return JsonResponse({
