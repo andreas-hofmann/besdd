@@ -511,7 +511,8 @@ class MealListView(LoginRequiredMixin,
         return JsonResponse(
             [{
                 'id': d.id,
-                'time': d.dt,
+                'dt': d.dt,
+                'dt_end': d.dt_end,
                 'food': [ f.name for f in d.food.all() ],
             } for d in data.all() ],
         safe=False)
@@ -569,6 +570,7 @@ class MealUpdateView(LoginRequiredMixin,
         return JsonResponse({
             'id': o.id,
             'dt': o.dt,
+            'dt_end': o.dt_end,
             'food': [ f.name for f in o.food.all() ],
             'food_choices': [ { 'id': f.id, 'name': f.name } for f in foods.all() ],
         })
