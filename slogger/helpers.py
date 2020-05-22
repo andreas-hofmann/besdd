@@ -32,26 +32,26 @@ def fetch_growth_from_db(request, child_id):
 
 
 def fetch_summary_from_db(request, child_id):
-    sleep = models.SleepPhase.objects.filter(child=child_id)
+    sleep = models.SleepPhase.objects.filter(child=child_id).order_by("dt")
     sleep = filter_GET_daterage(request, sleep)
 
-    meal = models.Meal.objects.filter(child=child_id)
+    meal = models.Meal.objects.filter(child=child_id).order_by("dt")
     meal = filter_GET_daterage(request, meal)
 
-    diaper = models.Diaper.objects.filter(child=child_id)
+    diaper = models.Diaper.objects.filter(child=child_id).order_by("dt")
     diaper = filter_GET_daterage(request, diaper)
 
     return sleep, meal, diaper
 
 
 def  fetch_specials_from_db(request, child_id):
-    events = models.Event.objects.filter(child=child_id)
+    events = models.Event.objects.filter(child=child_id).order_by("dt")
     events = filter_GET_daterage(request, events)
 
-    diary = models.DiaryEntry.objects.filter(child=child_id)
+    diary = models.DiaryEntry.objects.filter(child=child_id).order_by("dt")
     diary = filter_GET_daterage(request, diary)
 
-    measurements = models.Measurement.objects.filter(child=child_id)
+    measurements = models.Measurement.objects.filter(child=child_id).order_by("dt")
     measurements = filter_GET_daterage(request, measurements)
 
     return events, diary, measurements
