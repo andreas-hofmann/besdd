@@ -369,8 +369,8 @@ Summary for {{ child.name }}
     <div class="my-3">
       <div v-if="graph_type == 'List'" id="my-list">
         <p v-if="my_data.avg != null" id="averages">
-          Average sleep time: [[ my_data.avg.time ]] hours in [[ my_data.avg.phases ]] phases.
-          Average sleep time: [[ my_data.avg.interval ]] hours.
+          Average sleep time: [[ my_data.avg.time ]] hours in [[ my_data.avg.phases ]] phases.<br />
+          Average interval between sleeps: [[ my_data.avg.interval ]] hours.
         </p>
         <div id="accordion">
           <summary-entry v-for="(data, idx) in my_data.data" :key="data.day" :idx="idx" :day="data.day" :summary="data.data"></summary-entry>
