@@ -102,7 +102,12 @@ def calculate_totals(data, dict_key, h_day=8, h_night=19):
             pass
 
         if last_d:
-            interval_secs = (d.dt-last_d.dt).total_seconds()
+            try:
+                interval_secs = (d.dt-last_d.dt_end).total_seconds()
+            except (AttributeError, TypeError):
+                interval_secs = (d.dt-last_d.dt).total_seconds()
+            if interval_secs < 0:
+                interval_secs = 0
             totals[main_key][dict_key]['sum']['interval'] += interval_secs
 
         totals[main_key][dict_key][key]['interval'] += interval_secs
