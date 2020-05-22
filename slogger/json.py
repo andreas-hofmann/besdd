@@ -195,10 +195,15 @@ def get_summary_data_list(request, child_id=None):
     phases   = functions.calculate_average(totals, 'count')
     interval = functions.calculate_average(totals, 'interval')/3600
 
+    try:
+        interval = interval/phases
+    except ZeroDivisionError:
+        interval = 0
+
     avg = {
         'time':   f"{time:.1f}",
         'phases': f"{phases:.1f}",
-        'interval': f"{interval/phases:.1f}",
+        'interval': f"{interval:.1f}",
     }
 
     return JsonResponse({
