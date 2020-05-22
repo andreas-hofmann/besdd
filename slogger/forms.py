@@ -123,8 +123,28 @@ class MealForm(GenericHelperForm):
         if not child:
             child = kwargs['instance'].child
 
+        self.fields['dt_end'].widget = DateTimePickerInput(options={'format': 'YYYY-MM-DD HH:mm',
+                                                                     'collapse': False,
+                                                                     'showClear': True,
+                                                                     'ignoreReadonly': True,
+                                                                     'showTodayButton': True})
+        self.fields['dt_end'].widget.attrs['readonly'] = True
+
         self.fields['food'].queryset = models.Food.objects.filter(
                 Q(created_by__in=child.parents.all()) | Q(is_default=True))
+
+    def clean(self):
+        dt = self.data.get('dt')
+        dt_end = self.data.get('dt_end')
+
+        if dt and dt_end:
+            if dt > dt_end:
+                raise forms.ValidationError("Start time must not be after end time.", code='invalid')
+
+            if (tz.datetime.fromisoformat(dt_end) - tz.datetime.fromisoformat(dt)) > tz.timedelta(days=1):
+                raise forms.ValidationError("Meal durations > 1 day are not supported.", code='invalid')
+
+        return super().clean()
 
 class DiaperContentForm(GenericHelperForm):
     class Meta:

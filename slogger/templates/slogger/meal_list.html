@@ -16,8 +16,10 @@ Meals for {{ child.name }}
         <thead class="thead-dark">
           <tr class="d-flex">
             <th class="col-3">Date</th>
-            <th class="col-2">Time</th>
-            <th class="col-5">Food</th>
+            <th class="col-1">Time</th>
+            <th class="col-1">End</th>
+            <th class="col-1">Dur.</th>
+            <th class="col-4">Food</th>
             <th class="col">Actions</th>
           </tr>
         </thead>
@@ -26,8 +28,10 @@ Meals for {{ child.name }}
           {% for o in object_list %}
           <tr class="d-flex">
             <th class="col-3" scope="row"> {{ o.dt|dt_localdate }}</th>
-            <td class="col-2">{{ o.dt|dt_localtime }}</td>
-            <td class="col-5"> {% for f in o.food.all %} {{ f }} {% endfor %} </td>
+            <td class="col-1">{{ o.dt|dt_localtime }}</td>
+            <td class="col-1">{{ o.dt_end|dt_localtime }}</td>
+            <td class="col-1">{{ o.duration_hhmm }}</td>
+            <td class="col-4"> {% for f in o.food.all %} {{ f }} {% endfor %} </td>
             <td class="col">
               <a class='btn btn-secondary btn-sm' href='{% url 'meals_edit' child.id o.id %}'>
                 <i class="material-icons">edit</i>

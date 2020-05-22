@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
+from django.utils import timezone as tz
 
 from . import models
 
@@ -166,3 +167,52 @@ class AjaxableResponseMixin:
 
     def get_json(self, request, *args, **kwargs):
         return JsonResponse({'Error': 'Not implemented!'}, status=501)
+
+class DurationModelMixin:
+    """
+    Adds methods to calculate durations to a model. Requires that
+    the model had dt and dt_end attributes (both holding a datetime object).
+    """
+    def duration_sec(self):
+        if self.dt_end and self.dt:
+            return (self.dt_end - self.dt).total_seconds()
+        else:
+            return 0
+
+    def duration_sec_day(self, tomorrow=False):
+        if self.dt_end and self.dt:
+            start = tz.localtime(self.dt)
+            end = tz.localtime(self.dt_end)
+
+            startdate = start.date()
+            enddate = end.date()
+
+            if end - start > tz.timedelta(days=1):
+                raise ValueError("Durations > 1 day are not supported.")
+
+            if startdate != enddate:
+                if not tomorrow:
+                    d = start
+                    end = tz.make_aware(tz.datetime(d.year,d.month,d.day)+tz.timedelta(days=1))
+                else:
+                    d = start
+                    start = tz.make_aware(tz.datetime(d.year,d.month,d.day)+tz.timedelta(days=1))
+            else:
+                if tomorrow:
+                    return 0
+
+            return (end - start).total_seconds()
+        else:
+            return 0
+
+    def duration_hhmm(self):
+        d = ""
+        sec = self.duration_sec()
+        if sec:
+            d = "%02i:%02i" % (sec/3600, sec%3600/60)
+        return d
+
+    def time_in_range(self, point):
+        if self.dt and self.dt_end:
+            return point >= self.dt and point <= self.dt_end
+        return False

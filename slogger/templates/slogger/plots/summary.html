@@ -42,6 +42,15 @@ Vue.component('summary-entry', {
 
       return 0;
     },
+    avgInterval: function(val) {
+      var time = parseFloat(val.interval);
+      var count = parseFloat(val.count);
+
+      if (time && count)
+        return (time/3600/count).toFixed(1);
+
+      return 0;
+    },
   },
   template: "#summary-entry-template",
 });
@@ -145,8 +154,8 @@ Summary for {{ child.name }}
 
           <div class="container">
             <div class="row">
-              <div v-if="summary.sum" class="col-xs small mt-2 ml-1">
-                <small>Slept [[ secToHours(summary.sum.time) ]] h in [[ summary.sum.count ]] phases.</small>
+              <div v-if="summary.sleep" class="col-xs small mt-2 ml-1">
+                <small>Slept [[ secToHours(summary.sleep.sum.time) ]] h in [[ summary.sleep.sum.count ]] phases.</small>
               </div>
 
               <div v-if="summary.meals" class="col-xs small mt-2 ml-1">
@@ -177,7 +186,7 @@ Summary for {{ child.name }}
         <div class="card-body">
           <div class="container">
 
-            <div v-if="summary.sum" :id="[ 'sleep'+idx ]">
+            <div v-if="summary.sleep" :id="[ 'sleep'+idx ]">
               <div class="row mb-2">
                 <div class="col-md"></div>
                 <div class="col-md"><h3><u>Sleep</u></h3></div>
@@ -187,22 +196,22 @@ Summary for {{ child.name }}
                 <div class="col-md">
                 <h5>Total:</h5>
                 <p>
-                  [[ secToHours(summary.sum.time) ]] hours in [[ summary.sum.count ]] phases.<br>
-                  Avg. length [[ avgTime(summary.sum) ]] hours.
+                  [[ secToHours(summary.sleep.sum.time) ]] hours in [[ summary.sleep.sum.count ]] phases.<br>
+                  Avg. length [[ avgTime(summary.sleep.sum) ]] hours.
                 </p>
                 </div>
                 <div class="col-md">
                 <h5>Day:</h5>
                 <p>
-                  [[ secToHours(summary.day.time) ]] hours in [[ summary.day.count ]] phases.<br>
-                  Avg. length [[ avgTime(summary.day) ]] hours.
+                  [[ secToHours(summary.sleep.day.time) ]] hours in [[ summary.sleep.day.count ]] phases.<br>
+                  Avg. length [[ avgTime(summary.sleep.day) ]] hours.
                 </p>
                 </div>
                 <div class="col-md">
                 <h5>Night:</h5>
                 <p>
-                  [[ secToHours(summary.night.time) ]] hours in [[ summary.night.count ]] phases.<br>
-                  Avg. length [[ avgTime(summary.night) ]] hours.
+                  [[ secToHours(summary.sleep.night.time) ]] hours in [[ summary.sleep.night.count ]] phases.<br>
+                  Avg. length [[ avgTime(summary.sleep.night) ]] hours.
                 </p>
                 </div>
               </div>
@@ -219,21 +228,21 @@ Summary for {{ child.name }}
                 <h5>Total:</h5>
                 <p>
                   [[ summary.meals.sum.count ]] meals eaten.<br>
-                  Avg. interval [[ avgTime(summary.meals.sum) ]] hours.
+                  Avg. interval [[ avgInterval(summary.meals.sum) ]] hours.
                 </p>
                 </div>
                 <div class="col-md">
                 <h5>Day:</h5>
                 <p>
                   [[ summary.meals.day.count ]] meals eaten.<br>
-                  Avg. interval [[ avgTime(summary.meals.day) ]] hours.
+                  Avg. interval [[ avgInterval(summary.meals.day) ]] hours.
                 </p>
                 </div>
                 <div class="col-md">
                 <h5>Night:</h5>
                 <p>
                   [[ summary.meals.night.count ]] meals eaten.<br>
-                  Avg. interval [[ avgTime(summary.meals.night) ]] hours.
+                  Avg. interval [[ avgInterval(summary.meals.night) ]] hours.
                 </p>
                 </div>
               </div>
@@ -250,21 +259,21 @@ Summary for {{ child.name }}
                 <h5>Total:</h5>
                 <p>
                   [[ summary.diapers.sum.count ]] diapers used.<br>
-                  Avg. interval [[ avgTime(summary.diapers.sum) ]] hours.
+                  Avg. interval [[ avgInterval(summary.diapers.sum) ]] hours.
                 </p>
                 </div>
                 <div class="col-md">
                 <h5>Day:</h5>
                 <p>
                   [[ summary.diapers.day.count ]] diapers used.<br>
-                  Avg. interval [[ avgTime(summary.diapers.day) ]] hours.
+                  Avg. interval [[ avgInterval(summary.diapers.day) ]] hours.
                 </p>
                 </div>
                 <div class="col-md">
                 <h5>Night:</h5>
                 <p>
                   [[ summary.diapers.night.count ]] diapers used.<br>
-                  Avg. interval [[ avgTime(summary.diapers.night) ]] hours.
+                  Avg. interval [[ avgInterval(summary.diapers.night) ]] hours.
                 </p>
                 </div>
               </div>

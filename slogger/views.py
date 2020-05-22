@@ -313,7 +313,7 @@ class SummaryListView(LoginRequiredMixin,
 
     def get_queryset(self, **kwargs):
         data = models.SleepPhase.objects.filter(child=self.kwargs.get('child_id'))
-        self.totals = functions.calculate_sleep_totals(data)[::-1]
+        self.totals = functions.calculate_duration_totals(data)[::-1]
         return self.totals
 
     def get_context_data(self, **kwargs):
