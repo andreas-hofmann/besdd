@@ -191,10 +191,14 @@ def get_summary_data_list(request, child_id=None):
 
     totals = functions.merge_totals(sleeptotals, mealtotals, diapertotals, measurements, events, diary)
 
+    time     = functions.calculate_average(totals, 'time')/3600
+    phases   = functions.calculate_average(totals, 'count')
+    interval = functions.calculate_average(totals, 'interval')/3600
+
     avg = {
-        'time':   f"{functions.calculate_average(totals, 'time')/3600:.1f}",
-        'phases': f"{functions.calculate_average(totals, 'count'):.1f}",
-        'interval': f"{functions.calculate_average(totals, 'interval')/3600:.1f}",
+        'time':   f"{time:.1f}",
+        'phases': f"{phases:.1f}",
+        'interval': f"{interval/phases:.1f}",
     }
 
     return JsonResponse({
