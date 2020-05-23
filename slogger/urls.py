@@ -51,6 +51,7 @@ urlpatterns = [
     path('<int:child_id>/summary/',                 views.SummaryListView.as_view(),        name="summary"),
 
     path('<int:child_id>/data/check/',              json.get_check,                         name="check_data"),
+    path('<int:child_id>/data/current_phase/',      json.get_current_sleepphase,            name="check_sleepphase"),
     path('<int:child_id>/data/summary/graph/',      json.get_summary_data_graph,            name="summary_data_graph"),
     path('<int:child_id>/data/summary/list/',       json.get_summary_data_list,             name="summary_data_list"),
     path('<int:child_id>/data/histogram/',          json.get_histogram_data,                name="histogram_data"),
