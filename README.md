@@ -43,9 +43,31 @@ To get this up and running, clone the repo and perform the following steps:
         ./manage.py migrate
         ./manage.py runserver
 
-- Surf to localhost:8000
+- Surf to 127.0.0.1:8000
 
 Disable DEBUG in settings.py if you want to run it in production!
+
+#### Add the frontend
+
+If you want to use the vue.js based frontend, also do the following:
+
+- Fetch the frontend submodule:
+
+        git submodule init
+	git submodule update
+
+- Install required packages:
+
+        cd frontend
+	npm i
+
+- Start the node development server:
+
+        npm run serve
+
+- Surf to 127.0.0.1:8000, register an account + set the checkmark for "use new UI" in the user settings.
+
+If you want to run the frontend in production, run *npm run build*.
 
 ### Used software
 
