@@ -54,12 +54,12 @@ If you want to use the vue.js based frontend, also do the following:
 - Fetch the frontend submodule:
 
         git submodule init
-	git submodule update
+        git submodule update
 
 - Install required packages:
 
         cd frontend
-	npm i
+        npm i
 
 - Start the node development server:
 
