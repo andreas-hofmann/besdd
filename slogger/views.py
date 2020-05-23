@@ -11,8 +11,10 @@ from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone as tz
+from django.db.models import Q
+from django.conf import settings
 
 from . import models
 from . import forms
@@ -24,11 +26,24 @@ from . import decorators
 # Free for all views
 
 class IndexView(mixins.AddChildContextViewMixin,
+                mixins.AjaxableResponseMixin,
                 TemplateView):
-    template_name = "slogger/index.html"
+
+    def get_template_names(self):
+        if settings.USE_VUE_FRONTEND \
+            and self.request.user.is_authenticated \
+            and self.request.user.usersettings.use_new_ui:
+            if settings.DEBUG:
+                return ['app.html']
+            else:
+                return ['index.html']
+
+        return ['slogger/index.html']
 
     def render_to_response(self, context, **response_kwargs):
-        if self.request.user.is_authenticated:
+        if not (settings.USE_VUE_FRONTEND \
+            and self.request.user.is_authenticated \
+            and self.request.user.usersettings.use_new_ui):
             children = models.Child.objects.filter(parents__id=self.request.user.id)
             if self.request.user.is_authenticated:
                 s = self.request.user.usersettings
@@ -40,6 +55,32 @@ class IndexView(mixins.AddChildContextViewMixin,
             else:
                 return redirect('child_add')
         return super().render_to_response(context, **response_kwargs)
+
+    def get_json(self, request, *args, **kwargs):
+        ctx = super().get_context_data(*args, **kwargs)
+
+        if ctx.get('children'):
+            my_children = ctx.get('children').all()
+        else:
+            my_children = []
+
+        default_child = None
+        if request.user.is_authenticated and request.user.usersettings.default_child:
+            c = request.user.usersettings.default_child
+            default_child = { "id": c.id, "name": c.name }
+
+        return JsonResponse(
+        {
+            'user': request.user.username if request.user.is_authenticated else None,
+            'id': request.user.id if request.user.is_authenticated else None,
+            'default_child': default_child,
+            'children': [
+                {
+                    'id': c.id,
+                    'name': c.name,
+                } for c in my_children
+            ],
+        })
 
 # Views requiring login
 
@@ -58,6 +99,7 @@ def quick_add_sleepphase(request, child_id=None):
 
 class SummaryPlotView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
+                      mixins.AjaxableResponseMixin,
                       TemplateView):
     template_name = "slogger/plots/summary.html"
 
@@ -65,6 +107,7 @@ class SummaryPlotView(LoginRequiredMixin,
 
 class SleepPhaseListView(LoginRequiredMixin,
                          mixins.AddChildContextViewMixin,
+                         mixins.AjaxableResponseMixin,
                          ListView):
     model = models.SleepPhase
 
@@ -75,11 +118,25 @@ class SleepPhaseListView(LoginRequiredMixin,
     def get_queryset(self, **kwargs):
         return models.SleepPhase.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
 
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.SleepPhase.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'from': d.dt,
+                'to': d.dt_end if d.dt_end else None,
+            } for d in data.all() ],
+        safe=False)
+
 class SleepPhaseCreateView(LoginRequiredMixin,
                            SuccessMessageMixin,
                            mixins.AddChildContextViewMixin,
                            mixins.SetChildIdFormMixin,
                            mixins.CreatedByFormMixin,
+                           mixins.AjaxableResponseMixin,
                            CreateView):
     model = models.SleepPhase
     template_name = "generic_form.html"
@@ -103,6 +160,7 @@ class SleepPhaseCreateView(LoginRequiredMixin,
 class SleepPhaseUpdateView(LoginRequiredMixin,
                            SuccessMessageMixin,
                            mixins.AddChildContextViewMixin,
+                           mixins.AjaxableResponseMixin,
                            UpdateView):
     model = models.SleepPhase
     template_name = "generic_form.html"
@@ -126,9 +184,18 @@ class SleepPhaseUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('sleepphases', kwargs = {'child_id': self.object.child.id})
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'dt_end': o.dt_end,
+        })
+
 class SleepPhaseDeleteView(LoginRequiredMixin,
                            SuccessMessageMixin,
                            mixins.AddChildContextViewMixin,
+                           mixins.AjaxableResponseMixin,
                            DeleteView):
     model = models.SleepPhase
     template_name = "generic_delete.html"
@@ -146,6 +213,7 @@ class SleepPhaseDeleteView(LoginRequiredMixin,
 
 class ChildView(LoginRequiredMixin,
                 mixins.AddChildContextViewMixin,
+                mixins.AjaxableResponseMixin,
                 DetailView):
     model = models.Child
     pk_url_kwarg = "child_id"
@@ -155,9 +223,24 @@ class ChildView(LoginRequiredMixin,
         context["parents"] = [ p for p in get_user_model().objects.all() if p in self.object.parents.all() ]
         return context
 
+    def get_json(self, request, *args, **kwargs):
+        c = self.get_object()
+        return JsonResponse(
+        {
+            'child': {
+                'id': c.id,
+                'name': c.name,
+                'birthday': c.birthday,
+                'parents': [
+                    { 'id': p.id, 'name': p.username, } for p in c.parents.all()
+                ],
+            },
+        })
+
 class ChildCreateView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
                       mixins.CreatedByFormMixin,
+                      mixins.AjaxableResponseMixin,
                       CreateView):
     model = models.Child
     template_name ="generic_form.html"
@@ -180,6 +263,7 @@ class ChildCreateView(LoginRequiredMixin,
 
 class ChildUpdateView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
+                      mixins.AjaxableResponseMixin,
                       UpdateView):
     model = models.Child
     pk_url_kwarg = "child_id"
@@ -199,15 +283,40 @@ class ChildUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('child', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'name': o.name,
+            'parents': [ p.username for p in o.parents.all() ],
+            'birthday': o.birthday,
+            'gender': o.gender,
+        })
+
 class ChildListView(LoginRequiredMixin,
                     mixins.AddChildContextViewMixin,
+                    mixins.AjaxableResponseMixin,
                     ListView):
     def get_queryset(self):
         return models.Child.objects.filter(parents__id=self.request.user.id)
 
+    def get_json(self, request, *args, **kwargs):
+        data = models.Child.objects.filter(parents__id=self.request.user.id).order_by("-dt")
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'name': d.name,
+                'birthday': d.birthday,
+                'gender': d.gender,
+                'parents': [ p.username for p in d.parents.all() ],
+            } for d in data.all() ],
+        safe=False)
+
 
 class SummaryListView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
+                      mixins.AjaxableResponseMixin,
                       ListView):
     template_name = "slogger/summary.html"
 
@@ -236,6 +345,7 @@ class SummaryListView(LoginRequiredMixin,
 
 class MeasurementListView(LoginRequiredMixin,
                           mixins.AddChildContextViewMixin,
+                          mixins.AjaxableResponseMixin,
                           ListView):
     model = models.Measurement
     pk_url_kwarg = "child_id"
@@ -247,10 +357,25 @@ class MeasurementListView(LoginRequiredMixin,
     def get_queryset(self, **kwargs):
         return models.Measurement.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
 
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.Measurement.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'time': d.dt,
+                'height': d.height,
+                'weight': d.weight,
+            } for d in data.all() ],
+        safe=False)
+
 class MeasurementCreateView(LoginRequiredMixin,
                             mixins.AddChildContextViewMixin,
                             mixins.SetChildIdFormMixin,
                             mixins.CreatedByFormMixin,
+                            mixins.AjaxableResponseMixin,
                             CreateView):
     model = models.Measurement
     template_name ="generic_form.html"
@@ -268,6 +393,7 @@ class MeasurementCreateView(LoginRequiredMixin,
 
 class MeasurementUpdateView(LoginRequiredMixin,
                             mixins.CheckObjectChildRelationMixin,
+                            mixins.AjaxableResponseMixin,
                             UpdateView):
     model = models.Measurement
     template_name ="generic_form.html"
@@ -282,8 +408,18 @@ class MeasurementUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('measurements', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'height': o.height,
+            'weight': o.weight,
+        })
+
 class MeasurementDeleteView(LoginRequiredMixin,
                             mixins.CheckObjectChildRelationMixin,
+                            mixins.AjaxableResponseMixin,
                             DeleteView):
     model = models.Measurement
     template_name ="generic_delete.html"
@@ -300,6 +436,7 @@ class MeasurementDeleteView(LoginRequiredMixin,
 
 class FoodListView(LoginRequiredMixin,
                    mixins.AddChildContextViewMixin,
+                   mixins.AjaxableResponseMixin,
                    ListView):
     model = models.Food
     pk_url_kwarg = "child_id"
@@ -311,9 +448,19 @@ class FoodListView(LoginRequiredMixin,
     def get_queryset(self, **kwargs):
         return models.Food.objects.filter(created_by=self.request.user.id).order_by("-dt")
 
+    def get_json(self, request, *args, **kwargs):
+        data = models.Food.objects.filter(created_by=self.request.user.id).order_by("-dt")
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'name': d.name,
+                'description': d.description,
+            } for d in data.all() ], safe=False)
+
 class FoodCreateView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
                      mixins.CreatedByFormMixin,
+                     mixins.AjaxableResponseMixin,
                      CreateView):
     model = models.Food
     template_name ="generic_form.html"
@@ -330,6 +477,7 @@ class FoodCreateView(LoginRequiredMixin,
 
 class FoodUpdateView(LoginRequiredMixin,
                      mixins.CheckCreatedByMixin,
+                     mixins.AjaxableResponseMixin,
                      UpdateView):
     model = models.Food
     template_name ="generic_form.html"
@@ -344,9 +492,19 @@ class FoodUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('foods')
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'name': o.name,
+            'description': o.description,
+        })
+
 
 class MealListView(LoginRequiredMixin,
                    mixins.AddChildContextViewMixin,
+                   mixins.AjaxableResponseMixin,
                    ListView):
     model = models.Meal
     pk_url_kwarg = "child_id"
@@ -358,10 +516,25 @@ class MealListView(LoginRequiredMixin,
     def get_queryset(self, **kwargs):
         return models.Meal.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
 
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.Meal.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'dt': d.dt,
+                'dt_end': d.dt_end,
+                'food': [ f.name for f in d.food.all() ],
+            } for d in data.all() ],
+        safe=False)
+
 class MealCreateView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
                      mixins.SetChildIdFormMixin,
                      mixins.CreatedByFormMixin,
+                     mixins.AjaxableResponseMixin,
                      CreateView):
     model = models.Meal
     template_name ="generic_form.html"
@@ -378,8 +551,16 @@ class MealCreateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('meals', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        child = models.Child.objects.get(id=self.kwargs['child_id'])
+        foods = models.Food.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
+        return JsonResponse({
+            'food_choices': [ { 'id': f.id, 'name': f.name } for f in foods.all() ],
+        })
+
 class MealUpdateView(LoginRequiredMixin,
                      mixins.CheckObjectChildRelationMixin,
+                     mixins.AjaxableResponseMixin,
                      UpdateView):
     model = models.Meal
     template_name ="generic_form.html"
@@ -394,8 +575,22 @@ class MealUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('meals', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        child = models.Child.objects.get(id=self.kwargs['child_id'])
+        foods = models.Food.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
+
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'dt_end': o.dt_end,
+            'food': [ f.name for f in o.food.all() ],
+            'food_choices': [ { 'id': f.id, 'name': f.name } for f in foods.all() ],
+        })
+
 class MealDeleteView(LoginRequiredMixin,
                      mixins.CheckObjectChildRelationMixin,
+                     mixins.AjaxableResponseMixin,
                      DeleteView):
     model = models.Meal
     template_name ="generic_delete.html"
@@ -413,6 +608,7 @@ class MealDeleteView(LoginRequiredMixin,
 
 class DiaperContentListView(LoginRequiredMixin,
                             mixins.AddChildContextViewMixin,
+                            mixins.AjaxableResponseMixin,
                             ListView):
     model = models.DiaperContent
     pk_url_kwarg = "child_id"
@@ -424,9 +620,19 @@ class DiaperContentListView(LoginRequiredMixin,
     def get_queryset(self, **kwargs):
         return models.DiaperContent.objects.filter(created_by=self.request.user.id).order_by("-dt")
 
+    def get_json(self, request, *args, **kwargs):
+        data = models.DiaperContent.objects.filter(created_by=self.request.user.id).order_by("-dt")
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'name': d.name,
+                'description': d.description,
+            } for d in data.all() ], safe=False)
+
 class DiaperContentCreateView(LoginRequiredMixin,
                              mixins.AddChildContextViewMixin,
                              mixins.CreatedByFormMixin,
+                             mixins.AjaxableResponseMixin,
                              CreateView):
     model = models.DiaperContent
     template_name ="generic_form.html"
@@ -444,6 +650,7 @@ class DiaperContentCreateView(LoginRequiredMixin,
 
 class DiaperContentUpdateView(LoginRequiredMixin,
                               mixins.CheckCreatedByMixin,
+                              mixins.AjaxableResponseMixin,
                               UpdateView):
     model = models.DiaperContent
     template_name ="generic_form.html"
@@ -458,9 +665,18 @@ class DiaperContentUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('diapercontents')
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'name': o.name,
+            'description': o.description,
+        })
+
 
 class DiaperListView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
+                     mixins.AjaxableResponseMixin,
                      ListView):
     model = models.Diaper
     pk_url_kwarg = "child_id"
@@ -472,10 +688,24 @@ class DiaperListView(LoginRequiredMixin,
     def get_queryset(self, **kwargs):
         return models.Diaper.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
 
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.Diaper.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'time': d.dt,
+                'contents': [ c.name for c in d.content.all() ],
+            } for d in data.all() ],
+        safe=False)
+
 class DiaperCreateView(LoginRequiredMixin,
                        mixins.AddChildContextViewMixin,
                        mixins.SetChildIdFormMixin,
                        mixins.CreatedByFormMixin,
+                       mixins.AjaxableResponseMixin,
                        CreateView):
     model = models.Diaper
     template_name ="generic_form.html"
@@ -492,8 +722,16 @@ class DiaperCreateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('diapers', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        child = models.Child.objects.get(id=self.kwargs['child_id'])
+        dc = models.DiaperContent.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
+        return JsonResponse({
+            'content_choices': [ { 'id': c.id, 'name': c.name } for c in dc.all() ],
+        })
+
 class DiaperUpdateView(LoginRequiredMixin,
                        mixins.CheckObjectChildRelationMixin,
+                       mixins.AjaxableResponseMixin,
                        UpdateView):
     model = models.Diaper
     template_name ="generic_form.html"
@@ -508,8 +746,21 @@ class DiaperUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('diapers', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        child = models.Child.objects.get(id=self.kwargs['child_id'])
+        dc = models.DiaperContent.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
+
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'content': [ c.name for c in o.content.all() ],
+            'content_choices': [ { 'id': c.id, 'name': c.name } for c in dc.all() ],
+        })
+
 class DiaperDeleteView(LoginRequiredMixin,
                        mixins.CheckObjectChildRelationMixin,
+                       mixins.AjaxableResponseMixin,
                        DeleteView):
     model = models.Diaper
     template_name ="generic_delete.html"
@@ -527,6 +778,7 @@ class DiaperDeleteView(LoginRequiredMixin,
 
 class EventListView(LoginRequiredMixin,
                     mixins.AddChildContextViewMixin,
+                    mixins.AjaxableResponseMixin,
                     ListView):
     model = models.Event
     pk_url_kwarg = "child_id"
@@ -538,10 +790,25 @@ class EventListView(LoginRequiredMixin,
     def get_queryset(self, **kwargs):
         return models.Event.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
 
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.Event.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'time': d.dt,
+                'event': d.event,
+                'description': d.description,
+            } for d in data.all() ],
+        safe=False)
+
 class EventCreateView(LoginRequiredMixin,
                       mixins.AddChildContextViewMixin,
                       mixins.SetChildIdFormMixin,
                       mixins.CreatedByFormMixin,
+                      mixins.AjaxableResponseMixin,
                       CreateView):
     model = models.Event
     template_name ="generic_form.html"
@@ -559,6 +826,7 @@ class EventCreateView(LoginRequiredMixin,
 
 class EventUpdateView(LoginRequiredMixin,
                       mixins.CheckObjectChildRelationMixin,
+                      mixins.AjaxableResponseMixin,
                       UpdateView):
     model = models.Event
     template_name ="generic_form.html"
@@ -573,8 +841,18 @@ class EventUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('events', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'event': o.event,
+            'description': o.description,
+        })
+
 class EventDeleteView(LoginRequiredMixin,
                       mixins.CheckObjectChildRelationMixin,
+                      mixins.AjaxableResponseMixin,
                       DeleteView):
     model = models.Event
     template_name ="generic_delete.html"
@@ -592,6 +870,7 @@ class EventDeleteView(LoginRequiredMixin,
 
 class DiaryEntryListView(LoginRequiredMixin,
                          mixins.AddChildContextViewMixin,
+                         mixins.AjaxableResponseMixin,
                          ListView):
     model = models.DiaryEntry
     pk_url_kwarg = "child_id"
@@ -603,10 +882,25 @@ class DiaryEntryListView(LoginRequiredMixin,
     def get_queryset(self, **kwargs):
         return models.DiaryEntry.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
 
+    def get_json(self, request, *args, **kwargs):
+        self.paginate_by = None
+        data = models.DiaryEntry.objects.filter(child=self.kwargs.get('child_id')).order_by("-dt")
+        data = helpers.filter_GET_daterage(request, data)
+
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'time': d.dt,
+                'title': d.title,
+                'content': d.content,
+            } for d in data.all() ],
+        safe=False)
+
 class DiaryEntryCreateView(LoginRequiredMixin,
                            mixins.AddChildContextViewMixin,
                            mixins.SetChildIdFormMixin,
                            mixins.CreatedByFormMixin,
+                           mixins.AjaxableResponseMixin,
                            CreateView):
     model = models.DiaryEntry
     template_name ="generic_form.html"
@@ -624,6 +918,7 @@ class DiaryEntryCreateView(LoginRequiredMixin,
 
 class DiaryEntryUpdateView(LoginRequiredMixin,
                            mixins.CheckObjectChildRelationMixin,
+                           mixins.AjaxableResponseMixin,
                            UpdateView):
     model = models.DiaryEntry
     template_name ="generic_form.html"
@@ -638,8 +933,18 @@ class DiaryEntryUpdateView(LoginRequiredMixin,
     def get_success_url(self):
         return reverse_lazy('diary', kwargs = {'child_id': self.kwargs['child_id']})
 
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'dt': o.dt,
+            'title': o.title,
+            'content': o.content,
+        })
+
 class DiaryEntryDeleteView(LoginRequiredMixin,
                            mixins.CheckObjectChildRelationMixin,
+                           mixins.AjaxableResponseMixin,
                            DeleteView):
     model = models.DiaryEntry
     template_name ="generic_delete.html"
@@ -656,6 +961,7 @@ class DiaryEntryDeleteView(LoginRequiredMixin,
 
 
 class SettingsUpdateView(LoginRequiredMixin,
+                         mixins.AjaxableResponseMixin,
                          UpdateView):
     model = models.UserSettings
     template_name ="generic_form.html"
@@ -678,3 +984,20 @@ class SettingsUpdateView(LoginRequiredMixin,
 
     def get_success_url(self):
         return reverse_lazy('settings', kwargs= {'pk': self.request.user.usersettings.id })
+
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'paginate_by': o.paginate_by,
+            'date_range_days': o.date_range_days,
+            'sleep_enabled': o.sleep_enabled,
+            'meals_enabled': o.meals_enabled,
+            'diapers_enabled': o.diapers_enabled,
+            'default_child': o.default_child.id if o.default_child else None,
+            'start_hour_day': o.start_hour_day,
+            'start_hour_night': o.start_hour_night,
+            'histogram_raster': o.histogram_raster,
+            'histogram_factor_md': o.histogram_factor_md,
+            'use_new_ui': o.use_new_ui,
+        })

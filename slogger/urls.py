@@ -1,7 +1,9 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 from . import json
+
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('children/',                               views.ChildListView.as_view(),          name="children"),
@@ -47,18 +49,16 @@ urlpatterns = [
     path('<int:child_id>/diary/delete/<int:pk>/',   views.DiaryEntryDeleteView.as_view(),   name="diary_delete"),
 
     path('<int:child_id>/summary/',                 views.SummaryListView.as_view(),        name="summary"),
-    path('<int:child_id>/plot/summary/',            views.SummaryPlotView.as_view(),        name="plot_summary"),
-
 
     path('<int:child_id>/data/check/',              json.get_check,                         name="check_data"),
+    path('<int:child_id>/data/current_phase/',      json.get_current_sleepphase,            name="check_sleepphase"),
     path('<int:child_id>/data/summary/graph/',      json.get_summary_data_graph,            name="summary_data_graph"),
     path('<int:child_id>/data/summary/list/',       json.get_summary_data_list,             name="summary_data_list"),
     path('<int:child_id>/data/histogram/',          json.get_histogram_data,                name="histogram_data"),
     path('<int:child_id>/data/measurements/',       json.get_growth_data,                   name="measurement_data"),
     path('<int:child_id>/data/percentiles/<str:m_type>/', json.get_percentile_data,         name="percentile_data"),
 
-
     path('<int:child_id>/',                         views.ChildView.as_view(),              name="child"),
 
-    path('',                                        views.IndexView.as_view(),              name="index"),
+    re_path('.*',                                  views.IndexView.as_view(),              name="index"),
 ]

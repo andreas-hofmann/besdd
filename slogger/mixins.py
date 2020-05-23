@@ -136,7 +136,7 @@ class AttributeModelMixin:
 
 class AjaxableResponseMixin:
     """
-    Mixin to add AJAX support to a form.
+    Mixin to add AJAX support to a (form) view.
     Must be used with an object-based FormView (e.g. CreateView)
     """
     def form_invalid(self, form):
@@ -159,6 +159,14 @@ class AjaxableResponseMixin:
         else:
             return response
 
+    def get(self, request, *args, **kwargs):
+        if not request.is_ajax():
+            return super().get(request, *args, **kwargs)
+        else:
+            return self.get_json(request, *args, **kwargs)
+
+    def get_json(self, request, *args, **kwargs):
+        return JsonResponse({'Error': 'Not implemented!'}, status=501)
 
 class DurationModelMixin:
     """
