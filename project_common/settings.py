@@ -31,8 +31,6 @@ except FileNotFoundError:
     print("dd if=/dev/urandom count=1 bs=56 | base64 > secret_key.txt")
     sys.exit(1)
 
-USE_VUE_FRONTEND = True
-
 DEBUG = True
 
 if DEBUG == True:
@@ -66,6 +64,17 @@ INSTALLED_APPS = [
 ]
 
 FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
+FRONTEND_DIST_DIR = os.path.join(FRONTEND_DIR, "dist")
+
+USE_VUE_FRONTEND = False
+
+if DEBUG:
+    if os.path.exists(FRONTEND_DIR):
+        USE_VUE_FRONTEND = True
+else:
+    if os.path.exists(FRONTEND_DIST_DIR):
+        USE_VUE_FRONTEND = True
+
 if DEBUG and USE_VUE_FRONTEND:
     INSTALLED_APPS.append('webpack_loader')
     WEBPACK_LOADER = {
@@ -164,7 +173,6 @@ STATICFILES_DIRS = [
 ]
 
 if USE_VUE_FRONTEND and not DEBUG:
-    FRONTEND_DIST_DIR = os.path.join(FRONTEND_DIR, "dist")
 
     STATICFILES_DIRS.append(FRONTEND_DIST_DIR)
     TEMPLATES[0]['DIRS'].append(FRONTEND_DIST_DIR)
