@@ -151,6 +151,11 @@ class DiaperContentForm(GenericHelperForm):
         model = models.DiaperContent
         exclude = ['is_default', 'created_by', 'dt']
 
+class DiaperTypeForm(GenericHelperForm):
+    class Meta:
+        model = models.DiaperType
+        exclude = ['is_default', 'created_by', 'dt']
+
 class DiaperForm(GenericHelperForm):
     class Meta:
         model = models.Diaper
