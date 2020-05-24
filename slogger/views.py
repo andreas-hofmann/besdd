@@ -674,6 +674,74 @@ class DiaperContentUpdateView(LoginRequiredMixin,
         })
 
 
+class DiaperTypeListView(LoginRequiredMixin,
+                            mixins.AddChildContextViewMixin,
+                            mixins.AjaxableResponseMixin,
+                            ListView):
+    model = models.DiaperType
+    pk_url_kwarg = "child_id"
+
+    def setup(self, request, *args, **kwargs):
+        self.paginate_by = request.user.usersettings.paginate_by
+        return super().setup(request, *args, **kwargs)
+
+    def get_queryset(self, **kwargs):
+        return models.DiaperType.objects.filter(created_by=self.request.user.id).order_by("-dt")
+
+    def get_json(self, request, *args, **kwargs):
+        data = models.DiaperType.objects.filter(created_by=self.request.user.id).order_by("-dt")
+        return JsonResponse(
+            [{
+                'id': d.id,
+                'name': d.name,
+                'description': d.description,
+            } for d in data.all() ], safe=False)
+
+class DiaperTypeCreateView(LoginRequiredMixin,
+                             mixins.AddChildContextViewMixin,
+                             mixins.CreatedByFormMixin,
+                             mixins.AjaxableResponseMixin,
+                             CreateView):
+    model = models.DiaperType
+    template_name ="generic_form.html"
+    pk_url_kwarg = "child_id"
+    success_message = "DiaperType added."
+    form_class = forms.DiaperTypeForm
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["headline"] = "Add diaper type"
+        return ctx
+
+    def get_success_url(self):
+        return reverse_lazy('diapertypes')
+
+class DiaperTypeUpdateView(LoginRequiredMixin,
+                              mixins.CheckCreatedByMixin,
+                              mixins.AjaxableResponseMixin,
+                              UpdateView):
+    model = models.DiaperType
+    template_name ="generic_form.html"
+    success_message = "DiaperType details updated."
+    form_class = forms.DiaperTypeForm
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["headline"] = "Edit diaper type details"
+        return ctx
+
+    def get_success_url(self):
+        return reverse_lazy('diapertypes')
+
+    def get_json(self, request, *args, **kwargs):
+        o = self.get_object()
+        return JsonResponse({
+            'id': o.id,
+            'name': o.name,
+            'description': o.description,
+        })
+
+
 class DiaperListView(LoginRequiredMixin,
                      mixins.AddChildContextViewMixin,
                      mixins.AjaxableResponseMixin,
@@ -698,6 +766,7 @@ class DiaperListView(LoginRequiredMixin,
                 'id': d.id,
                 'time': d.dt,
                 'contents': [ c.name for c in d.content.all() ],
+                'type': d.type.name if d.type else None,
             } for d in data.all() ],
         safe=False)
 
@@ -725,8 +794,10 @@ class DiaperCreateView(LoginRequiredMixin,
     def get_json(self, request, *args, **kwargs):
         child = models.Child.objects.get(id=self.kwargs['child_id'])
         dc = models.DiaperContent.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
+        dt = models.DiaperType.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
         return JsonResponse({
             'content_choices': [ { 'id': c.id, 'name': c.name } for c in dc.all() ],
+            'type_choices': [ { 'id': t.id, 'name': t.name } for t in dt.all() ],
         })
 
 class DiaperUpdateView(LoginRequiredMixin,
@@ -749,6 +820,7 @@ class DiaperUpdateView(LoginRequiredMixin,
     def get_json(self, request, *args, **kwargs):
         child = models.Child.objects.get(id=self.kwargs['child_id'])
         dc = models.DiaperContent.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
+        dt = models.DiaperType.objects.filter( Q(created_by__in=child.parents.all()) | Q(is_default=True))
 
         o = self.get_object()
         return JsonResponse({
@@ -756,6 +828,7 @@ class DiaperUpdateView(LoginRequiredMixin,
             'dt': o.dt,
             'content': [ c.name for c in o.content.all() ],
             'content_choices': [ { 'id': c.id, 'name': c.name } for c in dc.all() ],
+            'type_choices': [ { 'id': t.id, 'name': t.name } for t in dt.all() ],
         })
 
 class DiaperDeleteView(LoginRequiredMixin,
