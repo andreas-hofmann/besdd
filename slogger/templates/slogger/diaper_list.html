@@ -17,7 +17,8 @@ Changed diapers for {{ child.name }}
           <tr class="d-flex">
             <th class="col-3">Date</th>
             <th class="col-2">Time</th>
-            <th class="col-5">Content</th>
+            <th class="col-4">Content</th>
+            <th class="col-1">Type</th>
             <th class="col">Actions</th>
           </tr>
         </thead>
@@ -27,7 +28,8 @@ Changed diapers for {{ child.name }}
           <tr class="d-flex">
             <th class="col-3" scope="row"> {{ o.dt|dt_localdate }}</th>
             <td class="col-2">{{ o.dt|dt_localtime }}</td>
-            <td class="col-5"> {% for c in o.content.all %} {{ c }} {% endfor %} </td>
+            <td class="col-4"> {% for c in o.content.all %} {{ c }} {% endfor %} </td>
+            <td class="col-1">{{ o.diaper_type.name }}</td>
             <td class="col">
               <a class='btn btn-secondary btn-sm' href='{% url 'diapers_edit' child.id o.id %}'>
                 <i class="material-icons">edit</i>

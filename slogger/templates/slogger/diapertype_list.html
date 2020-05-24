@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% load filters %}
+
+{% block headline %}
+Diaper types
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-lg">
+      <table class="table table-bordered table-hover table-sm">
+        <thead class="thead-dark">
+          <tr class="d-flex">
+            <th class="col-3">Type</th>
+            <th class="col-3">Desc.</th>
+            <th class="col-2">Created on</th>
+            <th class="col-2">by</th>
+            <th class="col">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for o in object_list %}
+          <tr class="d-flex">
+            <th class="col-3" scope="row"> {{ o.name }}</th>
+            <td class="col-3">{{ o.description }}</td>
+            <td class="col-2">{{ o.dt|dt_localdate }}</td>
+            <td class="col-2">{{ o.created_by.username }}</td>
+            <td class="col">
+              {% if request.user == o.created_by %}
+              <a class='btn btn-secondary btn-sm' href='{% url 'diapertypes_edit' o.id %}'>
+                <i class="material-icons">edit</i>
+              </a>
+              {% endif %}
+           </td>
+          <tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-2"></div>
+  </div>
+</div>
+
+<div class="mt-1">
+  <a class='btn btn-primary btn-sm' href='{% url 'diapertypes_add' %}'> <i class="material-icons">add</i> </a>
+</div>
+
+{% endblock %}
