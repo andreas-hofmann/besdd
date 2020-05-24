@@ -773,7 +773,7 @@ class DiaperListView(LoginRequiredMixin,
                 'time': d.dt,
                 'comment': d.comment,
                 'contents': [ c.name for c in d.content.all() ],
-                'type': d.type.name if d.type else None,
+                'type': d.diaper_type.name if d.diaper_type else None,
             } for d in data.all() ],
         safe=False)
 
