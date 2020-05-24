@@ -151,6 +151,18 @@ class DiaperContent(models.Model,
     def __str__(self):
         return self.name
 
+class DiaperType(models.Model,
+                 AttributeModelMixin):
+
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    is_default = models.BooleanField(default=False)
+    dt = models.DateTimeField("Created", default=tz.now)
+    name = models.CharField("Name", max_length=100)
+    description = models.TextField("Description", max_length=2000, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
 
 class Diaper(models.Model,
              AttributeModelMixin):
@@ -159,6 +171,7 @@ class Diaper(models.Model,
     created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     dt = models.DateTimeField("Changed on", default=tz.now)
     content = models.ManyToManyField(DiaperContent, blank=True)
+    diaper_type = models.ForeignKey(DiaperType, null=True, blank=True, on_delete=models.CASCADE)
     comment = models.TextField("Comment", max_length=2000, null=True, blank=True)
 
     def __str__(self):
