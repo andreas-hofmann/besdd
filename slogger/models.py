@@ -79,6 +79,7 @@ class SleepPhase(models.Model,
     created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     dt = models.DateTimeField("Start", default=tz.now)
     dt_end = models.DateTimeField("End", null=True, blank=True)
+    comment = models.TextField("Comment", max_length=2000, null=True, blank=True)
 
     def add(self, child=None, dt=None, dt_end=None):
         self.child = child
@@ -102,6 +103,7 @@ class Measurement(models.Model,
     dt = models.DateTimeField("Date taken", default=tz.now)
     weight = models.FloatField("Weight (kg)", null=True, blank=True)
     height = models.FloatField("Height (cm)", null=True, blank=True)
+    comment = models.TextField("Comment", max_length=2000, null=True, blank=True)
 
     def __str__(self):
         return str(self.child.name) + " - " + \
@@ -131,6 +133,7 @@ class Meal(models.Model,
     dt = models.DateTimeField("Eaten on", default=tz.now)
     food = models.ManyToManyField(Food)
     dt_end = models.DateTimeField("Eaten until", default=None, null=True, blank=True)
+    comment = models.TextField("Comment", max_length=2000, null=True, blank=True)
 
     def __str__(self):
         return str(self.child.name) + " - " + str(tz.localtime(self.dt))
@@ -156,6 +159,7 @@ class Diaper(models.Model,
     created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     dt = models.DateTimeField("Changed on", default=tz.now)
     content = models.ManyToManyField(DiaperContent, blank=True)
+    comment = models.TextField("Comment", max_length=2000, null=True, blank=True)
 
     def __str__(self):
         return str(self.child.name) + " - " + \
