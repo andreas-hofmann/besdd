@@ -16,6 +16,8 @@ def filter_GET_daterage(request, data):
         except ValueError:
             raise ValidationError("Invalid date supplied.")
 
+        date_to += tz.timedelta(days=1)
+
         data = data.filter(dt__range=[date_from, date_to])
 
     return data
