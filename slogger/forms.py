@@ -36,7 +36,7 @@ class GenericHelperForm(forms.ModelForm):
 
 class SleepPhaseForm(GenericHelperForm):
     class Meta:
-        fields = ('dt', 'dt_end')
+        fields = ('dt', 'dt_end', 'comment')
         model = models.SleepPhase
 
     def __init__(self, *args, **kwargs):
