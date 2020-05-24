@@ -773,7 +773,7 @@ class DiaperListView(LoginRequiredMixin,
                 'time': d.dt,
                 'comment': d.comment,
                 'contents': [ c.name for c in d.content.all() ],
-                'type': d.diaper_type.name if d.diaper_type else None,
+                'diaper_type': d.diaper_type.name if d.diaper_type else None,
             } for d in data.all() ],
         safe=False)
 
@@ -835,6 +835,7 @@ class DiaperUpdateView(LoginRequiredMixin,
             'dt': o.dt,
             'comment': o.comment,
             'content': [ c.name for c in o.content.all() ],
+            'diaper_type': o.diaper_type.id if o.diaper_type else None,
             'content_choices': [ { 'id': c.id, 'name': c.name } for c in dc.all() ],
             'type_choices': [ { 'id': t.id, 'name': t.name } for t in dt.all() ],
         })
