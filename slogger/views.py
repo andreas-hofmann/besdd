@@ -1050,10 +1050,10 @@ class SettingsUpdateView(LoginRequiredMixin,
     success_message = "Settings updated."
     form_class = forms.UserSettingsForm
 
-    def get_context_data(self, **kwargs):
-        if self.kwargs['pk'] != self.request.user.usersettings.id:
-            raise PermissionDenied("Editing is only allowed for own settings.")
+    def get_object(self):
+        return models.UserSettings.objects.get(user=self.request.user)
 
+    def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["headline"] = "Edit user settings"
 
@@ -1065,7 +1065,7 @@ class SettingsUpdateView(LoginRequiredMixin,
         return ctx
 
     def get_success_url(self):
-        return reverse_lazy('settings', kwargs= {'pk': self.request.user.usersettings.id })
+        return reverse_lazy('settings')
 
     def get_json(self, request, *args, **kwargs):
         o = self.get_object()
