@@ -127,6 +127,7 @@ class SleepPhaseListView(LoginRequiredMixin,
             [{
                 'id': d.id,
                 'from': d.dt,
+                'comment': d.comment,
                 'to': d.dt_end if d.dt_end else None,
             } for d in data.all() ],
         safe=False)
@@ -189,6 +190,7 @@ class SleepPhaseUpdateView(LoginRequiredMixin,
         return JsonResponse({
             'id': o.id,
             'dt': o.dt,
+            'comment': o.comment,
             'dt_end': o.dt_end,
         })
 
@@ -368,6 +370,7 @@ class MeasurementListView(LoginRequiredMixin,
                 'time': d.dt,
                 'height': d.height,
                 'weight': d.weight,
+                'comment': d.comment,
             } for d in data.all() ],
         safe=False)
 
@@ -415,6 +418,7 @@ class MeasurementUpdateView(LoginRequiredMixin,
             'dt': o.dt,
             'height': o.height,
             'weight': o.weight,
+            'comment': o.comment,
         })
 
 class MeasurementDeleteView(LoginRequiredMixin,
@@ -527,6 +531,7 @@ class MealListView(LoginRequiredMixin,
                 'dt': d.dt,
                 'dt_end': d.dt_end,
                 'food': [ f.name for f in d.food.all() ],
+                'comment': d.comment,
             } for d in data.all() ],
         safe=False)
 
@@ -585,6 +590,7 @@ class MealUpdateView(LoginRequiredMixin,
             'dt': o.dt,
             'dt_end': o.dt_end,
             'food': [ f.name for f in o.food.all() ],
+            'comment': o.comment,
             'food_choices': [ { 'id': f.id, 'name': f.name } for f in foods.all() ],
         })
 
@@ -765,6 +771,7 @@ class DiaperListView(LoginRequiredMixin,
             [{
                 'id': d.id,
                 'time': d.dt,
+                'comment': d.comment,
                 'contents': [ c.name for c in d.content.all() ],
                 'type': d.type.name if d.type else None,
             } for d in data.all() ],
@@ -826,6 +833,7 @@ class DiaperUpdateView(LoginRequiredMixin,
         return JsonResponse({
             'id': o.id,
             'dt': o.dt,
+            'comment': o.comment,
             'content': [ c.name for c in o.content.all() ],
             'content_choices': [ { 'id': c.id, 'name': c.name } for c in dc.all() ],
             'type_choices': [ { 'id': t.id, 'name': t.name } for t in dt.all() ],
