@@ -31,8 +31,8 @@ class IndexView(mixins.AddChildContextViewMixin,
 
     def get_template_names(self):
         if settings.USE_VUE_FRONTEND \
-            and self.request.user.is_authenticated \
-            and self.request.user.usersettings.use_new_ui:
+            and ( (self.request.user.is_authenticated and self.request.user.usersettings.use_new_ui) \
+                 or not self.request.user.is_authenticated):
             if settings.DEBUG:
                 return ['app.html']
             else:
@@ -41,9 +41,9 @@ class IndexView(mixins.AddChildContextViewMixin,
         return ['slogger/index.html']
 
     def render_to_response(self, context, **response_kwargs):
-        if not (settings.USE_VUE_FRONTEND \
-            and self.request.user.is_authenticated \
-            and self.request.user.usersettings.use_new_ui):
+        if not settings.USE_VUE_FRONTEND \
+           or (self.request.user.is_authenticated \
+               and not self.request.user.usersettings.use_new_ui):
             children = models.Child.objects.filter(parents__id=self.request.user.id)
             if self.request.user.is_authenticated:
                 s = self.request.user.usersettings
