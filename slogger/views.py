@@ -233,6 +233,7 @@ class ChildView(LoginRequiredMixin,
                 'id': c.id,
                 'name': c.name,
                 'birthday': c.birthday,
+                'gender': c.gender,
                 'parents': [
                     { 'id': p.id, 'name': p.username, } for p in c.parents.all()
                 ],
