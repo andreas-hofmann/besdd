@@ -14,7 +14,8 @@ class UserSettings(models.Model,
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
 
     paginate_by = models.IntegerField("Paginate by", default=20)
-    date_range_days = models.IntegerField("Default summary date range", default=14)
+    date_range_days = models.IntegerField("Default summary date range (summary)", default=14)
+    date_range_days_details = models.IntegerField("Default summary date range (details)", default=7)
 
     sleep_enabled = models.BooleanField("Draw sleep data in graph by default", default=True);
     meals_enabled = models.BooleanField("Draw meal data in graph by default", default=False);
@@ -29,6 +30,8 @@ class UserSettings(models.Model,
     histogram_factor_md = models.IntegerField("Time factor for meals+diapers in histogram", default=6)
 
     use_new_ui = models.BooleanField("Use new UI variant", default=True);
+
+    show_meal_durations = models.BooleanField("Show durations for meals", default=True);
 
     def __str__(self):
         return f"Settings for { self.user }"
