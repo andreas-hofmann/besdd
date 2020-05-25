@@ -191,9 +191,9 @@ def get_summary_data_list(request, child_id=None):
 
     totals = functions.merge_totals(sleeptotals, mealtotals, diapertotals, measurements, events, diary)
 
-    time     = functions.calculate_average(totals, 'time')/3600
+    time     = functions.calculate_average(totals, 'time')
     phases   = functions.calculate_average(totals, 'count')
-    interval = functions.calculate_average(totals, 'interval')/3600
+    interval = functions.calculate_average(totals, 'interval')
 
     try:
         interval = interval/phases
