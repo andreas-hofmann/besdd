@@ -126,9 +126,9 @@ class SleepPhaseListView(LoginRequiredMixin,
         return JsonResponse(
             [{
                 'id': d.id,
-                'from': d.dt,
+                'dt': d.dt,
+                'dt_end': d.dt_end if d.dt_end else None,
                 'comment': d.comment,
-                'to': d.dt_end if d.dt_end else None,
             } for d in data.all() ],
         safe=False)
 
