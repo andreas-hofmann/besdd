@@ -1,3 +1,4 @@
 [submodule "frontend"]
 	path = frontend
 	url = https://github.com/andreas-hofmann/besdd-frontend.git
+	branch = master
