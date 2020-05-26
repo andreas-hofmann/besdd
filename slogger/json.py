@@ -195,6 +195,15 @@ def get_summary_data_list(request, child_id=None):
     phases   = functions.calculate_average(totals, 'count')
     interval = functions.calculate_average(totals, 'interval')
 
+    from pprint import pp
+    diaperstats = {}
+    for d in diaper:
+        if d.diaper_type:
+            if not diaperstats.get(str(d.diaper_type)):
+                diaperstats[str(d.diaper_type)] = 1
+            else:
+                diaperstats[str(d.diaper_type)] += 1
+
     try:
         interval = interval/phases
     except ZeroDivisionError:
@@ -208,6 +217,7 @@ def get_summary_data_list(request, child_id=None):
 
     return JsonResponse({
         'avg': avg,
+        'diaperstats': diaperstats,
         'data': [{'day': t[0], 'data': t[1]} for t in totals][::-1]
     }, safe=False)
 
