@@ -227,6 +227,14 @@ class ChildView(LoginRequiredMixin,
 
     def get_json(self, request, *args, **kwargs):
         c = self.get_object()
+        diapers = models.Diaper.objects.filter(child= c.id).count()
+        meals = models.Meal.objects.filter(child= c.id).count()
+        sleep = models.SleepPhase.objects.filter(child= c.id).count()
+
+        m = models.Measurement.objects.filter(child=c.id)
+        if m:
+            m = m.latest('dt')
+
         return JsonResponse(
         {
             'child': {
@@ -234,6 +242,16 @@ class ChildView(LoginRequiredMixin,
                 'name': c.name,
                 'birthday': c.birthday,
                 'gender': c.gender,
+                'totals': {
+                    'meals': meals,
+                    'diapers': diapers,
+                    'sleep': sleep,
+                },
+                'last_measurement': {
+                    'dt': m.dt if m else None,
+                    'weight': m.weight if m else None,
+                    'height': m.height if m else None,
+                },
                 'parents': [
                     { 'id': p.id, 'name': p.username, } for p in c.parents.all()
                 ],
