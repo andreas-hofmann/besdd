@@ -344,7 +344,10 @@ def get_check(request, child_id=None):
 @login_required
 @decorators.only_own_children
 def get_current_sleepphase(request, child_id=None):
-    sp = models.SleepPhase.objects.filter(child=child_id).latest('dt')
+    sp = models.SleepPhase.objects.filter(child=child_id)
+
+    if sp:
+        sp = sp.latest('dt')
 
     if not sp or (sp.dt and sp.dt_end):
         return JsonResponse({ 'id': 0 })
