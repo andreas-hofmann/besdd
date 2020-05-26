@@ -195,7 +195,6 @@ def get_summary_data_list(request, child_id=None):
     phases   = functions.calculate_average(totals, 'count')
     interval = functions.calculate_average(totals, 'interval')
 
-    from pprint import pp
     diaperstats = {}
     for d in diaper:
         if d.diaper_type:
