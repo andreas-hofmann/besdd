@@ -85,7 +85,11 @@ def get_percentile_data(request, child_id=None, m_type=None):
     else:
         raise ValueError("Wrong percentile type specified: " + str(m_type))
 
-    end_day = c.age_days(measurements.last().dt.date())
+    try:
+        end_day = c.age_days(measurements.last().dt.date())
+    except AttributeError:
+        return JsonResponse({'Error': 'No measurements available.'}, status=404)
+
     percentiles = models.Percentile.objects.filter(
             Q(gender=c.gender) & Q(m_type=type_filter) & Q(day__lte=end_day)
         ).order_by('day')
