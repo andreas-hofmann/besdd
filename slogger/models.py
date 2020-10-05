@@ -118,7 +118,7 @@ class Food(models.Model,
           AttributeModelMixin):
 
     is_default = models.BooleanField(default=False)
-    created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
     dt = models.DateTimeField("Created", default=tz.now)
     name = models.CharField("Name", max_length=100)
     description = models.TextField("Description", max_length=2000, null=True, blank=True)
@@ -145,7 +145,7 @@ class Meal(models.Model,
 class DiaperContent(models.Model,
                     AttributeModelMixin):
 
-    created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
     is_default = models.BooleanField(default=False)
     dt = models.DateTimeField("Created", default=tz.now)
     name = models.CharField("Name", max_length=100)
@@ -157,7 +157,7 @@ class DiaperContent(models.Model,
 class DiaperType(models.Model,
                  AttributeModelMixin):
 
-    created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
     is_default = models.BooleanField(default=False)
     dt = models.DateTimeField("Created", default=tz.now)
     name = models.CharField("Name", max_length=100)
